@@ -145,10 +145,18 @@ export const completeMaintenanceLog = asyncHandler(async (req, res) => {
     maintenance.completedDate = new Date();
     await maintenance.save();
 
-    // Set vehicle back to available & update costs
+    // Only set vehicle back to available if no other active maintenance exists
     const vehicle = await Vehicle.findById(maintenance.vehicle);
     if (vehicle) {
-        vehicle.status = "available";
+        const otherActiveMaintenance = await Maintenance.countDocuments({
+            vehicle: vehicle._id,
+            status: "in_progress",
+            _id: { $ne: maintenance._id },
+        });
+
+        if (otherActiveMaintenance === 0) {
+            vehicle.status = "available";
+        }
         vehicle.totalMaintenanceCost += maintenance.cost;
         await vehicle.save();
     }
@@ -172,12 +180,20 @@ export const deleteMaintenanceLog = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Maintenance log not found.");
     }
 
-    // If deleting an in-progress maintenance, set vehicle back to available
+    // If deleting an in-progress maintenance, check if vehicle should become available
     if (maintenance.status === "in_progress") {
         const vehicle = await Vehicle.findById(maintenance.vehicle);
         if (vehicle && vehicle.status === "in_shop") {
-            vehicle.status = "available";
-            await vehicle.save();
+            const otherActiveMaintenance = await Maintenance.countDocuments({
+                vehicle: vehicle._id,
+                status: "in_progress",
+                _id: { $ne: maintenance._id },
+            });
+
+            if (otherActiveMaintenance === 0) {
+                vehicle.status = "available";
+                await vehicle.save();
+            }
         }
     }
 

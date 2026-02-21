@@ -60,11 +60,41 @@ export const getExpenseById = asyncHandler(async (req, res) => {
 
 // PUT /api/v1/expenses/:id
 export const updateExpense = asyncHandler(async (req, res) => {
+    const existingExpense = await Expense.findById(req.params.id);
+    if (!existingExpense) throw new ApiError(404, "Expense not found.");
+
+    const oldCost = existingExpense.cost;
+    const oldType = existingExpense.type;
+
     const updateData = { ...req.body };
     if (req.file) updateData.receipt = req.file.path;
 
-    const expense = await Expense.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true }).populate("vehicle", "name licensePlate").populate("loggedBy", "name");
-    if (!expense) throw new ApiError(404, "Expense not found.");
+    const expense = await Expense.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true })
+        .populate("vehicle", "name licensePlate")
+        .populate("loggedBy", "name");
+
+    // Adjust vehicle cost aggregation if cost or type changed
+    const newCost = expense.cost;
+    const newType = expense.type;
+
+    if (oldCost !== newCost || oldType !== newType) {
+        const vehicle = await Vehicle.findById(expense.vehicle._id || expense.vehicle);
+        if (vehicle) {
+            // Reverse old cost
+            if (oldType === "fuel") vehicle.totalFuelCost -= oldCost;
+            else if (oldType === "maintenance") vehicle.totalMaintenanceCost -= oldCost;
+
+            // Apply new cost
+            if (newType === "fuel") vehicle.totalFuelCost += newCost;
+            else if (newType === "maintenance") vehicle.totalMaintenanceCost += newCost;
+
+            // Ensure no negative values
+            vehicle.totalFuelCost = Math.max(0, vehicle.totalFuelCost);
+            vehicle.totalMaintenanceCost = Math.max(0, vehicle.totalMaintenanceCost);
+            await vehicle.save();
+        }
+    }
+
     res.status(200).json(new ApiResponse(200, { expense }, "Expense updated successfully."));
 });
 
@@ -72,6 +102,18 @@ export const updateExpense = asyncHandler(async (req, res) => {
 export const deleteExpense = asyncHandler(async (req, res) => {
     const expense = await Expense.findById(req.params.id);
     if (!expense) throw new ApiError(404, "Expense not found.");
+
+    // Reverse cost from vehicle totals
+    const vehicle = await Vehicle.findById(expense.vehicle);
+    if (vehicle) {
+        if (expense.type === "fuel") {
+            vehicle.totalFuelCost = Math.max(0, vehicle.totalFuelCost - expense.cost);
+        } else if (expense.type === "maintenance") {
+            vehicle.totalMaintenanceCost = Math.max(0, vehicle.totalMaintenanceCost - expense.cost);
+        }
+        await vehicle.save();
+    }
+
     await Expense.findByIdAndDelete(req.params.id);
     res.status(200).json(new ApiResponse(200, null, "Expense deleted successfully."));
 });

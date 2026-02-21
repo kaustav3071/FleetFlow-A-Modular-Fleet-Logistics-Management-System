@@ -7,15 +7,52 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 // ─────────────────────────────────────────────────────────
 // POST /api/v1/trips
+// Creates a trip in DRAFT status (no vehicle/driver status change)
 // ─────────────────────────────────────────────────────────
 export const createTrip = asyncHandler(async (req, res) => {
-    const { vehicle: vehicleId, driver: driverId, cargoWeight, cargoUnit } = req.body;
+    const { vehicle: vehicleId, driver: driverId } = req.body;
 
-    // Fetch vehicle and driver
+    // Verify vehicle and driver exist
     const vehicle = await Vehicle.findById(vehicleId);
     if (!vehicle) throw new ApiError(404, "Vehicle not found.");
 
     const driver = await Driver.findById(driverId);
+    if (!driver) throw new ApiError(404, "Driver not found.");
+
+    // Create trip in draft status (no status changes to vehicle/driver yet)
+    const trip = await Trip.create({
+        ...req.body,
+        startOdometer: req.body.startOdometer || vehicle.currentOdometer,
+        status: "draft",
+        createdBy: req.user._id,
+    });
+
+    const populatedTrip = await Trip.findById(trip._id)
+        .populate("vehicle", "name licensePlate type")
+        .populate("driver", "name licenseNumber")
+        .populate("createdBy", "name email");
+
+    res.status(201).json(
+        new ApiResponse(201, { trip: populatedTrip }, "Trip created as draft.")
+    );
+});
+
+// ─────────────────────────────────────────────────────────
+// PATCH /api/v1/trips/:id/dispatch
+// Validates everything and moves draft → dispatched
+// ─────────────────────────────────────────────────────────
+export const dispatchTrip = asyncHandler(async (req, res) => {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) throw new ApiError(404, "Trip not found.");
+
+    if (trip.status !== "draft") {
+        throw new ApiError(400, "Only draft trips can be dispatched.");
+    }
+
+    const vehicle = await Vehicle.findById(trip.vehicle);
+    if (!vehicle) throw new ApiError(404, "Vehicle not found.");
+
+    const driver = await Driver.findById(trip.driver);
     if (!driver) throw new ApiError(404, "Driver not found.");
 
     // ─── Validation: Vehicle availability ──────────────────
@@ -30,7 +67,7 @@ export const createTrip = asyncHandler(async (req, res) => {
 
     // ─── Validation: Driver license validity ───────────────
     if (new Date() >= driver.licenseExpiry) {
-        throw new ApiError(400, `Driver '${driver.name}' has an expired license. Cannot assign to trip.`);
+        throw new ApiError(400, `Driver '${driver.name}' has an expired license. Cannot dispatch trip.`);
     }
 
     // ─── Validation: Driver license category ───────────────
@@ -42,8 +79,8 @@ export const createTrip = asyncHandler(async (req, res) => {
     }
 
     // ─── Validation: Cargo weight vs capacity ──────────────
-    let cargoWeightKg = cargoWeight;
-    if (cargoUnit === "tons") cargoWeightKg = cargoWeight * 1000;
+    let cargoWeightKg = trip.cargoWeight;
+    if (trip.cargoUnit === "tons") cargoWeightKg = trip.cargoWeight * 1000;
 
     let vehicleCapacityKg = vehicle.maxLoadCapacity;
     if (vehicle.capacityUnit === "tons") vehicleCapacityKg = vehicle.maxLoadCapacity * 1000;
@@ -51,18 +88,15 @@ export const createTrip = asyncHandler(async (req, res) => {
     if (cargoWeightKg > vehicleCapacityKg) {
         throw new ApiError(
             400,
-            `Cargo weight (${cargoWeight} ${cargoUnit || "kg"}) exceeds vehicle capacity (${vehicle.maxLoadCapacity} ${vehicle.capacityUnit}). Overload is not permitted.`
+            `Cargo weight (${trip.cargoWeight} ${trip.cargoUnit || "kg"}) exceeds vehicle capacity (${vehicle.maxLoadCapacity} ${vehicle.capacityUnit}). Overload is not permitted.`
         );
     }
 
-    // Create trip
-    const trip = await Trip.create({
-        ...req.body,
-        startOdometer: req.body.startOdometer || vehicle.currentOdometer,
-        status: "dispatched",
-        dispatchedAt: new Date(),
-        createdBy: req.user._id,
-    });
+    // Dispatch the trip
+    trip.status = "dispatched";
+    trip.dispatchedAt = new Date();
+    trip.startOdometer = vehicle.currentOdometer;
+    await trip.save();
 
     // Update vehicle & driver statuses
     vehicle.status = "on_trip";
@@ -71,14 +105,13 @@ export const createTrip = asyncHandler(async (req, res) => {
 
     await Promise.all([vehicle.save(), driver.save()]);
 
-    // Populate for response
     const populatedTrip = await Trip.findById(trip._id)
         .populate("vehicle", "name licensePlate type")
         .populate("driver", "name licenseNumber")
         .populate("createdBy", "name email");
 
-    res.status(201).json(
-        new ApiResponse(201, { trip: populatedTrip }, "Trip dispatched successfully.")
+    res.status(200).json(
+        new ApiResponse(200, { trip: populatedTrip }, "Trip dispatched successfully.")
     );
 });
 
@@ -165,8 +198,18 @@ export const updateTrip = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Trip not found.");
     }
 
-    if (trip.status !== "draft" && trip.status !== "dispatched") {
-        throw new ApiError(400, "Can only update trips in 'draft' or 'dispatched' status.");
+    if (trip.status !== "draft") {
+        throw new ApiError(400, "Can only update trips in 'draft' status. Dispatched trips cannot be edited.");
+    }
+
+    // If vehicle or driver changed, verify they exist
+    if (req.body.vehicle) {
+        const vehicle = await Vehicle.findById(req.body.vehicle);
+        if (!vehicle) throw new ApiError(404, "Vehicle not found.");
+    }
+    if (req.body.driver) {
+        const driver = await Driver.findById(req.body.driver);
+        if (!driver) throw new ApiError(404, "Driver not found.");
     }
 
     const updatedTrip = await Trip.findByIdAndUpdate(
@@ -241,22 +284,26 @@ export const cancelTrip = asyncHandler(async (req, res) => {
         throw new ApiError(400, `Cannot cancel a trip that is already '${trip.status}'.`);
     }
 
-    // Reset statuses
-    const vehicle = await Vehicle.findById(trip.vehicle);
-    const driver = await Driver.findById(trip.driver);
+    const wasDispatched = trip.status === "dispatched";
 
     trip.status = "cancelled";
     trip.cancelledAt = new Date();
     await trip.save();
 
-    if (vehicle && vehicle.status === "on_trip") {
-        vehicle.status = "available";
-        await vehicle.save();
-    }
+    // Only reset vehicle/driver statuses if the trip was dispatched
+    if (wasDispatched) {
+        const vehicle = await Vehicle.findById(trip.vehicle);
+        const driver = await Driver.findById(trip.driver);
 
-    if (driver && driver.status === "on_trip") {
-        driver.status = "on_duty";
-        await driver.save();
+        if (vehicle && vehicle.status === "on_trip") {
+            vehicle.status = "available";
+            await vehicle.save();
+        }
+
+        if (driver && driver.status === "on_trip") {
+            driver.status = "on_duty";
+            await driver.save();
+        }
     }
 
     res.status(200).json(
