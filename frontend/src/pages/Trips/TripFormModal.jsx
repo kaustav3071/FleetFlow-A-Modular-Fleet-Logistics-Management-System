@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AlertTriangle } from 'lucide-react';
 import Modal from '../../components/ui/Modal.jsx';
 import Input from '../../components/ui/Input.jsx';
 import Select from '../../components/ui/Select.jsx';
@@ -45,12 +47,35 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  // CargoWeight > MaxCapacity validation (from problem statement)
+  const selectedVehicle = useMemo(
+    () => vehicles.find(v => v._id === form.vehicle),
+    [vehicles, form.vehicle]
+  );
+
+  const cargoWeightNum = parseFloat(form.cargoWeight) || 0;
+  const maxCapacity = selectedVehicle?.maxLoadCapacity || 0;
+
+  // Convert cargo weight to kg for comparison if units differ
+  const cargoInKg = form.cargoUnit === 'tons' ? cargoWeightNum * 1000 : cargoWeightNum;
+  const capacityInKg = selectedVehicle?.capacityUnit === 'tons'
+    ? maxCapacity * 1000
+    : maxCapacity;
+
+  const isOverweight = cargoInKg > 0 && capacityInKg > 0 && cargoInKg > capacityInKg;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Block submission if overweight
+    if (isOverweight) {
+      toast.error(`Cargo weight (${cargoInKg} kg) exceeds vehicle capacity (${capacityInKg} kg). Choose a larger vehicle or reduce cargo.`);
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = { ...form };
-      // Remove empty strings
       Object.keys(payload).forEach(k => { if (payload[k] === '') delete payload[k]; });
       if (payload.estimatedCost) payload.estimatedCost = Number(payload.estimatedCost);
       if (payload.cargoWeight) payload.cargoWeight = Number(payload.cargoWeight);
@@ -68,7 +93,10 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
     } finally { setLoading(false); }
   };
 
-  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.name} — ${v.licensePlate}` }));
+  const vehicleOptions = vehicles.map(v => ({
+    value: v._id,
+    label: `${v.name} — ${v.licensePlate} (${v.maxLoadCapacity || '?'} ${v.capacityUnit || 'kg'})`,
+  }));
   const driverOptions = drivers.map(d => ({ value: d._id, label: `${d.name} — ${d.licenseNumber}` }));
 
   return (
@@ -81,14 +109,48 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
           <Select name="driver" label="Driver" options={driverOptions} value={form.driver} onChange={handleChange} placeholder="Select driver" required />
           <Input name="estimatedCost" label="Estimated Cost (₹)" type="number" step="0.01" value={form.estimatedCost} onChange={handleChange} placeholder="15000" />
           <Input name="cargoDescription" label="Cargo Description" value={form.cargoDescription} onChange={handleChange} placeholder="Electronics, 50 boxes" />
-          <Input name="cargoWeight" label="Cargo Weight (kg)" type="number" step="0.1" value={form.cargoWeight} onChange={handleChange} placeholder="500" required />
+          <Input
+            name="cargoWeight"
+            label="Cargo Weight"
+            type="number"
+            step="0.1"
+            value={form.cargoWeight}
+            onChange={handleChange}
+            placeholder="500"
+            required
+            error={isOverweight ? `Exceeds max capacity of ${capacityInKg} kg` : ''}
+          />
           <Select name="cargoUnit" label="Weight Unit" options={[{ value: 'kg', label: 'Kilograms (kg)' }, { value: 'tons', label: 'Tons' }]} value={form.cargoUnit} onChange={handleChange} />
         </div>
+
+        {/* Overweight Warning Banner */}
+        <AnimatePresence>
+          {isOverweight && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex items-start gap-3 p-3 rounded-xl bg-red-50 border border-red-200"
+            >
+              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800">Cargo exceeds vehicle capacity</p>
+                <p className="text-xs text-red-600 mt-0.5">
+                  Cargo: <strong>{cargoInKg} kg</strong> • Vehicle Max Capacity: <strong>{capacityInKg} kg</strong>
+                  <br />Select a larger vehicle or reduce cargo weight to proceed.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <Textarea name="notes" label="Notes" value={form.notes} onChange={handleChange} placeholder="Additional trip notes..." />
 
         <div className="flex justify-end gap-3 pt-4 border-t border-surface-200">
           <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-          <Button type="submit" loading={loading}>{isEdit ? 'Update' : 'Create'} Trip</Button>
+          <Button type="submit" loading={loading} disabled={isOverweight}>
+            {isEdit ? 'Update' : 'Create'} Trip
+          </Button>
         </div>
       </form>
     </Modal>

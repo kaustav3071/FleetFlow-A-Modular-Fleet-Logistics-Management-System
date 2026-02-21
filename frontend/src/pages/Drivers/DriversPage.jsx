@@ -112,7 +112,13 @@ export default function DriversPage() {
     },
     {
       key: 'licenseExpiry', label: 'License Expiry', sortable: true,
-      render: (val) => val ? formatDate(val) : '-',
+      render: (val) => {
+        if (!val) return '-';
+        const daysLeft = Math.ceil((new Date(val) - new Date()) / (1000 * 60 * 60 * 24));
+        if (daysLeft < 0) return <Badge color="red" dot>Expired</Badge>;
+        if (daysLeft <= 30) return <span className="text-amber-600 font-medium">{formatDate(val)} <span className="text-xs">({daysLeft}d)</span></span>;
+        return formatDate(val);
+      },
     },
     {
       key: 'safetyScore', label: 'Safety', sortable: true,

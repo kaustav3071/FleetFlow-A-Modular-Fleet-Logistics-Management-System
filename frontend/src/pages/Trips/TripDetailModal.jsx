@@ -2,7 +2,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { TRIP_STATUS } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
-import { MapPin, Truck, User, Calendar, DollarSign, Package, FileText } from 'lucide-react';
+import { MapPin, Truck, User, Calendar, IndianRupee, Package, FileText } from 'lucide-react';
 
 export default function TripDetailModal({ isOpen, onClose, trip }) {
   if (!trip) return null;
@@ -14,7 +14,7 @@ export default function TripDetailModal({ isOpen, onClose, trip }) {
     { icon: Truck, label: 'Vehicle', value: trip.vehicle?.name || trip.vehicle?.licensePlate || 'Unassigned' },
     { icon: User, label: 'Driver', value: trip.driver?.name || 'Unassigned' },
     { icon: Calendar, label: 'Created', value: trip.createdAt ? formatDate(trip.createdAt) : 'N/A' },
-    { icon: DollarSign, label: 'Est. Cost', value: trip.estimatedCost ? formatCurrency(trip.estimatedCost) : 'N/A' },
+    { icon: IndianRupee, label: 'Est. Cost', value: trip.estimatedCost ? formatCurrency(trip.estimatedCost) : 'N/A' },
     { icon: Package, label: 'Cargo', value: trip.cargoDescription || 'N/A' },
     { icon: Package, label: 'Weight', value: trip.cargoWeight ? `${trip.cargoWeight} ${trip.cargoUnit || 'kg'}` : 'N/A' },
   ];

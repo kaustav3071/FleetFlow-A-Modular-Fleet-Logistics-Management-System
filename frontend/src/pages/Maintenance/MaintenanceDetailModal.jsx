@@ -2,7 +2,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { MAINTENANCE_STATUS, SERVICE_TYPES } from '../../utils/constants.js';
 import { formatDate, formatCurrency, formatKm } from '../../utils/formatters.js';
-import { Truck, Wrench, Calendar, DollarSign, Store, FileText, Gauge } from 'lucide-react';
+import { Truck, Wrench, Calendar, IndianRupee, Store, FileText, Gauge } from 'lucide-react';
 
 export default function MaintenanceDetailModal({ isOpen, onClose, record }) {
   if (!record) return null;
@@ -12,7 +12,7 @@ export default function MaintenanceDetailModal({ isOpen, onClose, record }) {
   const fields = [
     { icon: Truck, label: 'Vehicle', value: record.vehicle?.name || record.vehicle?.licensePlate || 'N/A' },
     { icon: Wrench, label: 'Service Type', value: serviceLabel },
-    { icon: DollarSign, label: 'Cost', value: formatCurrency(record.cost || 0) },
+    { icon: IndianRupee, label: 'Cost', value: formatCurrency(record.cost || 0) },
     { icon: Calendar, label: 'Service Date', value: record.serviceDate ? formatDate(record.serviceDate) : 'N/A' },
     { icon: Calendar, label: 'Completed', value: record.completedDate ? formatDate(record.completedDate) : 'N/A' },
     { icon: Gauge, label: 'Odometer at Service', value: record.odometerAtService ? formatKm(record.odometerAtService) : 'N/A' },

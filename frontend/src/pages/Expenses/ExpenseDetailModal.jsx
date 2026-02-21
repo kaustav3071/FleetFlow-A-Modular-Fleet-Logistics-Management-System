@@ -2,7 +2,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { EXPENSE_TYPES, EXPENSE_TYPE_CONFIG } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
-import { Truck, Tag, DollarSign, Calendar, Fuel, FileText } from 'lucide-react';
+import { Truck, Tag, IndianRupee, Calendar, Fuel, FileText } from 'lucide-react';
 
 export default function ExpenseDetailModal({ isOpen, onClose, expense }) {
   if (!expense) return null;
@@ -13,7 +13,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense }) {
   const fields = [
     { icon: Truck, label: 'Vehicle', value: expense.vehicle?.name || expense.vehicle?.licensePlate || 'N/A' },
     { icon: Tag, label: 'Type', value: typeLabel },
-    { icon: DollarSign, label: 'Cost', value: formatCurrency(expense.cost || 0) },
+    { icon: IndianRupee, label: 'Cost', value: formatCurrency(expense.cost || 0) },
     { icon: Calendar, label: 'Date', value: formatDate(expense.date) },
   ];
 
@@ -22,7 +22,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense }) {
       fields.push({ icon: Fuel, label: 'Fuel Qty', value: `${expense.fuelLiters} liters` });
     }
     if (expense.pricePerLiter) {
-      fields.push({ icon: DollarSign, label: 'Price/Liter', value: formatCurrency(expense.pricePerLiter) });
+      fields.push({ icon: IndianRupee, label: 'Price/Liter', value: formatCurrency(expense.pricePerLiter) });
     }
   }
 

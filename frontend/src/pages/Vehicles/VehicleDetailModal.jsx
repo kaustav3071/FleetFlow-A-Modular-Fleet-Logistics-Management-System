@@ -2,7 +2,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { VEHICLE_STATUS } from '../../utils/constants.js';
 import { formatCurrency, formatKm } from '../../utils/formatters.js';
-import { Truck, Fuel, Gauge, DollarSign, FileText, MapPin, Package } from 'lucide-react';
+import { Truck, Fuel, Gauge, IndianRupee, FileText, MapPin, Package } from 'lucide-react';
 
 export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
   if (!vehicle) return null;
@@ -14,8 +14,9 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
     { icon: Gauge, label: 'Odometer', value: formatKm(vehicle.currentOdometer || 0) },
     { icon: Package, label: 'Max Capacity', value: `${vehicle.maxLoadCapacity || 0} ${vehicle.capacityUnit || 'kg'}` },
     { icon: MapPin, label: 'Region', value: vehicle.region || 'N/A' },
-    { icon: DollarSign, label: 'Fuel Cost', value: formatCurrency(vehicle.totalFuelCost || 0) },
-    { icon: DollarSign, label: 'Maintenance Cost', value: formatCurrency(vehicle.totalMaintenanceCost || 0) },
+    { icon: IndianRupee, label: 'Fuel Cost', value: formatCurrency(vehicle.totalFuelCost || 0) },
+    { icon: IndianRupee, label: 'Maintenance Cost', value: formatCurrency(vehicle.totalMaintenanceCost || 0) },
+    { icon: IndianRupee, label: 'Total Operational Cost', value: formatCurrency((vehicle.totalFuelCost || 0) + (vehicle.totalMaintenanceCost || 0)) },
   ];
 
   return (
