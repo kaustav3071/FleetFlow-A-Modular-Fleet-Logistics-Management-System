@@ -17,9 +17,11 @@ import { DRIVER_STATUS } from '../../utils/constants.js';
 import { formatDate } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import { useToast } from '../../components/ui/Toast.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 export default function DriversPage() {
   const toast = useToast();
+  const { can } = usePermissions('drivers');
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -124,9 +126,9 @@ export default function DriversPage() {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={(e) => { e.stopPropagation(); setDetailDriver(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setEditDriver(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailDriver(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 cursor-pointer hover:scale-110" title="View"><Eye className="w-4 h-4" /></button>
+          {can.edit && <button onClick={(e) => { e.stopPropagation(); setEditDriver(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Edit"><Edit className="w-4 h-4" /></button>}
+          {can.delete && <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Delete"><Trash2 className="w-4 h-4" /></button>}
         </div>
       ),
     },
@@ -139,7 +141,7 @@ export default function DriversPage() {
           <h1 className="page-title">Drivers</h1>
           <p className="text-sm text-surface-500 mt-1">Manage fleet drivers</p>
         </div>
-        <Button icon={Plus} onClick={() => { setEditDriver(null); setShowForm(true); }}>Add Driver</Button>
+        {can.create && <Button icon={Plus} onClick={() => { setEditDriver(null); setShowForm(true); }}>Add Driver</Button>}
       </div>
 
       <Card className="p-4">
@@ -154,7 +156,7 @@ export default function DriversPage() {
 
       <Card className="overflow-hidden">
         {loading ? <LoadingSpinner /> : drivers.length === 0 ? (
-          <EmptyState icon={Users} title="No drivers found" description="Add your first driver" action={<Button icon={Plus} onClick={() => setShowForm(true)}>Add Driver</Button>} />
+          <EmptyState icon={Users} title="No drivers found" description="Add your first driver" action={can.create ? <Button icon={Plus} onClick={() => setShowForm(true)}>Add Driver</Button> : null} />
         ) : (
           <>
             <Table columns={columns} data={drivers} sortField={sortField} sortOrder={sortOrder} onSort={handleSort} onRowClick={(row) => setDetailDriver(row)} />

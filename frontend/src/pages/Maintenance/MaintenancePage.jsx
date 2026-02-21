@@ -17,9 +17,11 @@ import { MAINTENANCE_STATUS, SERVICE_TYPES } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import { useToast } from '../../components/ui/Toast.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 export default function MaintenancePage() {
   const toast = useToast();
+  const { can } = usePermissions('maintenance');
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -107,16 +109,18 @@ export default function MaintenancePage() {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          {row.status === 'in_progress' && (
-            <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50" title="Mark Complete">
+          {can.edit && row.status === 'in_progress' && (
+            <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-110" title="Mark Complete">
               <CheckCircle className="w-4 h-4" />
             </button>
           )}
-          <button onClick={(e) => { e.stopPropagation(); setDetailRecord(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
-          {row.status !== 'completed' && (
-            <button onClick={(e) => { e.stopPropagation(); setEditRecord(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailRecord(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 cursor-pointer hover:scale-110" title="View"><Eye className="w-4 h-4" /></button>
+          {can.edit && row.status !== 'completed' && (
+            <button onClick={(e) => { e.stopPropagation(); setEditRecord(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Edit"><Edit className="w-4 h-4" /></button>
           )}
-          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+          {can.delete && (
+            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Delete"><Trash2 className="w-4 h-4" /></button>
+          )}
         </div>
       ),
     },
@@ -129,7 +133,7 @@ export default function MaintenancePage() {
           <h1 className="page-title">Maintenance</h1>
           <p className="text-sm text-surface-500 mt-1">Schedule and track vehicle maintenance</p>
         </div>
-        <Button icon={Plus} onClick={() => { setEditRecord(null); setShowForm(true); }}>Log Maintenance</Button>
+        {can.create && <Button icon={Plus} onClick={() => { setEditRecord(null); setShowForm(true); }}>Log Maintenance</Button>}
       </div>
 
       <Card className="p-4">
@@ -144,7 +148,7 @@ export default function MaintenancePage() {
 
       <Card className="overflow-hidden">
         {loading ? <LoadingSpinner /> : records.length === 0 ? (
-          <EmptyState icon={Wrench} title="No maintenance records" description="Log your first maintenance entry" action={<Button icon={Plus} onClick={() => setShowForm(true)}>Log Maintenance</Button>} />
+          <EmptyState icon={Wrench} title="No maintenance records" description="Log your first maintenance entry" action={can.create ? <Button icon={Plus} onClick={() => setShowForm(true)}>Log Maintenance</Button> : null} />
         ) : (
           <>
             <Table columns={columns} data={records} sortField={sortField} sortOrder={sortOrder} onSort={handleSort} onRowClick={(row) => setDetailRecord(row)} />

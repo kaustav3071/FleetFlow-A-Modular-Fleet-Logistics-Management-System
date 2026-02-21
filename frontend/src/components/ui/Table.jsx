@@ -41,7 +41,7 @@ export default function Table({ columns, data = [], sortField, sortOrder, onSort
             safeData.map((row, i) => (
               <tr
                 key={row._id || i}
-                className={`transition-colors hover:bg-surface-50 ${onRowClick ? 'cursor-pointer' : ''}`}
+                className={`transition-all duration-150 hover:bg-brand-50/40 ${onRowClick ? 'cursor-pointer' : ''}`}
                 onClick={() => onRowClick?.(row)}
               >
                 {columns.map((col) => (

@@ -1,29 +1,29 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Truck, Users, Route, Wrench, Receipt,
   BarChart3, ChevronLeft, ChevronRight, Zap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { canView } from '../../utils/permissions.js';
 
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['manager', 'dispatcher', 'safety_officer', 'analyst'] },
-  { path: '/vehicles', label: 'Vehicles', icon: Truck, roles: ['manager', 'dispatcher', 'safety_officer'] },
-  { path: '/drivers', label: 'Drivers', icon: Users, roles: ['manager', 'dispatcher', 'safety_officer'] },
-  { path: '/trips', label: 'Trips', icon: Route, roles: ['manager', 'dispatcher'] },
-  { path: '/maintenance', label: 'Maintenance', icon: Wrench, roles: ['manager', 'safety_officer'] },
-  { path: '/expenses', label: 'Expenses', icon: Receipt, roles: ['manager', 'analyst'] },
-  { path: '/analytics', label: 'Analytics', icon: BarChart3, roles: ['manager', 'analyst', 'safety_officer'] },
+  { path: '/', label: 'Dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { path: '/vehicles', label: 'Vehicles', icon: Truck, module: 'vehicles' },
+  { path: '/drivers', label: 'Drivers', icon: Users, module: 'drivers' },
+  { path: '/trips', label: 'Trips', icon: Route, module: 'trips' },
+  { path: '/maintenance', label: 'Maintenance', icon: Wrench, module: 'maintenance' },
+  { path: '/expenses', label: 'Expenses', icon: Receipt, module: 'expenses' },
+  { path: '/analytics', label: 'Analytics', icon: BarChart3, module: 'analytics' },
 ];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, hasRole } = useAuth();
+  const { user } = useAuth();
+  const role = user?.role || '';
 
-  const filteredItems = navItems.filter(item =>
-    item.roles.some(role => hasRole(role))
-  );
+  const filteredItems = navItems.filter(item => canView(item.module, role));
 
   return (
     <motion.aside
@@ -61,7 +61,7 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
               ${isActive
-                ? 'bg-brand-50 text-brand-700 font-medium'
+                ? 'bg-brand-50 text-brand-700 font-medium shadow-sm'
                 : 'text-surface-500 hover:text-surface-800 hover:bg-surface-50'
               }`
             }
@@ -75,7 +75,7 @@ export default function Sidebar() {
                     transition={{ duration: 0.3 }}
                   />
                 )}
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-600' : ''}`} />
+                <item.icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-brand-600' : ''}`} />
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span
@@ -94,7 +94,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Collapse Toggle */}
+      {/* User info + Collapse Toggle */}
       <div className="px-3 py-3 border-t border-surface-200">
         {!collapsed && user && (
           <motion.div
@@ -108,7 +108,7 @@ export default function Sidebar() {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center gap-2 p-2 rounded-xl text-surface-400 hover:text-surface-700 hover:bg-surface-100 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 p-2 rounded-xl text-surface-400 hover:text-surface-700 hover:bg-surface-100 transition-all duration-200 cursor-pointer"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           {!collapsed && <span className="text-xs">Collapse</span>}

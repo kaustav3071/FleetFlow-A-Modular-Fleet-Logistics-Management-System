@@ -17,9 +17,11 @@ import { EXPENSE_TYPES, EXPENSE_TYPE_CONFIG } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import { useToast } from '../../components/ui/Toast.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 export default function ExpensesPage() {
   const toast = useToast();
+  const { can } = usePermissions('expenses');
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -95,9 +97,9 @@ export default function ExpensesPage() {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={(e) => { e.stopPropagation(); setDetailExpense(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setEditExpense(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailExpense(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 cursor-pointer hover:scale-110" title="View"><Eye className="w-4 h-4" /></button>
+          {can.edit && <button onClick={(e) => { e.stopPropagation(); setEditExpense(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Edit"><Edit className="w-4 h-4" /></button>}
+          {can.delete && <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer hover:scale-110" title="Delete"><Trash2 className="w-4 h-4" /></button>}
         </div>
       ),
     },
@@ -110,7 +112,7 @@ export default function ExpensesPage() {
           <h1 className="page-title">Expenses</h1>
           <p className="text-sm text-surface-500 mt-1">Track fleet expenses by category</p>
         </div>
-        <Button icon={Plus} onClick={() => { setEditExpense(null); setShowForm(true); }}>Add Expense</Button>
+        {can.create && <Button icon={Plus} onClick={() => { setEditExpense(null); setShowForm(true); }}>Add Expense</Button>}
       </div>
 
       <Card className="p-4">
@@ -125,7 +127,7 @@ export default function ExpensesPage() {
 
       <Card className="overflow-hidden">
         {loading ? <LoadingSpinner /> : expenses.length === 0 ? (
-          <EmptyState icon={Receipt} title="No expenses found" description="Log your first expense" action={<Button icon={Plus} onClick={() => setShowForm(true)}>Add Expense</Button>} />
+          <EmptyState icon={Receipt} title="No expenses found" description="Log your first expense" action={can.create ? <Button icon={Plus} onClick={() => setShowForm(true)}>Add Expense</Button> : null} />
         ) : (
           <>
             <Table columns={columns} data={expenses} sortField={sortField} sortOrder={sortOrder} onSort={handleSort} onRowClick={(row) => setDetailExpense(row)} />

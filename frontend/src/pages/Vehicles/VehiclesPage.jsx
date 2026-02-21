@@ -19,9 +19,11 @@ import { VEHICLE_STATUS, VEHICLE_TYPES } from '../../utils/constants.js';
 import { formatCurrency, formatKm, formatDate } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import { useToast } from '../../components/ui/Toast.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 export default function VehiclesPage() {
   const toast = useToast();
+  const { can } = usePermissions('vehicles');
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -147,22 +149,29 @@ export default function VehiclesPage() {
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); setDetailVehicle(row); }}
-            className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 cursor-pointer hover:scale-110"
+            title="View details"
           >
             <Eye className="w-4 h-4" />
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); setEditVehicle(row); setShowForm(true); }}
-            className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }}
-            className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {can.edit && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setEditVehicle(row); setShowForm(true); }}
+              className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all duration-200 cursor-pointer hover:scale-110"
+              title="Edit vehicle"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+          )}
+          {can.delete && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }}
+              className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer hover:scale-110"
+              title="Delete vehicle"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       ),
     },
@@ -175,9 +184,11 @@ export default function VehiclesPage() {
           <h1 className="page-title">Vehicles</h1>
           <p className="text-sm text-surface-500 mt-1">Manage your fleet vehicles</p>
         </div>
-        <Button icon={Plus} onClick={() => { setEditVehicle(null); setShowForm(true); }}>
-          Add Vehicle
-        </Button>
+        {can.create && (
+          <Button icon={Plus} onClick={() => { setEditVehicle(null); setShowForm(true); }}>
+            Add Vehicle
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -221,7 +232,7 @@ export default function VehiclesPage() {
             icon={Truck}
             title="No vehicles found"
             description="Add your first vehicle to start managing your fleet"
-            action={<Button icon={Plus} onClick={() => setShowForm(true)}>Add Vehicle</Button>}
+            action={can.create ? <Button icon={Plus} onClick={() => setShowForm(true)}>Add Vehicle</Button> : null}
           />
         ) : (
           <>

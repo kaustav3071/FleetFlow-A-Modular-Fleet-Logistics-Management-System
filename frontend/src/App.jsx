@@ -38,34 +38,47 @@ export default function App() {
                 <DashboardLayout />
               </ProtectedRoute>
             }>
+              {/* Dashboard — all roles */}
               <Route index element={<DashboardPage />} />
+
+              {/* Vehicles — Manager (full), Dispatcher (view), Safety Officer (view) */}
               <Route path="/vehicles" element={
                 <ProtectedRoute roles={['manager', 'dispatcher', 'safety_officer']}>
                   <VehiclesPage />
                 </ProtectedRoute>
               } />
+
+              {/* Drivers — Manager (full), Dispatcher (view), Safety Officer (view/edit) */}
               <Route path="/drivers" element={
                 <ProtectedRoute roles={['manager', 'dispatcher', 'safety_officer']}>
                   <DriversPage />
                 </ProtectedRoute>
               } />
+
+              {/* Trips — Manager (full), Dispatcher (full), Safety Officer (view), Analyst (view) */}
               <Route path="/trips" element={
-                <ProtectedRoute roles={['manager', 'dispatcher']}>
+                <ProtectedRoute roles={['manager', 'dispatcher', 'safety_officer', 'analyst']}>
                   <TripsPage />
                 </ProtectedRoute>
               } />
+
+              {/* Maintenance — Manager (full), Dispatcher (view), Safety Officer (view), Analyst (view) */}
               <Route path="/maintenance" element={
-                <ProtectedRoute roles={['manager', 'safety_officer']}>
+                <ProtectedRoute roles={['manager', 'dispatcher', 'safety_officer', 'analyst']}>
                   <MaintenancePage />
                 </ProtectedRoute>
               } />
+
+              {/* Expenses — Manager (full), Dispatcher (view), Analyst (view) */}
               <Route path="/expenses" element={
-                <ProtectedRoute roles={['manager', 'analyst']}>
+                <ProtectedRoute roles={['manager', 'dispatcher', 'analyst']}>
                   <ExpensesPage />
                 </ProtectedRoute>
               } />
+
+              {/* Analytics — Manager (full), Dispatcher (view), Safety Officer (view), Analyst (full) */}
               <Route path="/analytics" element={
-                <ProtectedRoute roles={['manager', 'analyst', 'safety_officer']}>
+                <ProtectedRoute roles={['manager', 'dispatcher', 'safety_officer', 'analyst']}>
                   <AnalyticsPage />
                 </ProtectedRoute>
               } />

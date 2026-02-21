@@ -23,11 +23,12 @@ export default function StatCard({ title, value, icon: Icon, trend, suffix = '',
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3, transition: { duration: 0.2 } }}
       transition={{ delay: index * 0.08, duration: 0.4 }}
-      className={`glass-card glass-card-hover p-5 group border-l-4 ${c.accent}`}
+      className={`glass-card glass-card-hover p-5 group border-l-4 ${c.accent} cursor-default`}
     >
       <div className="flex items-start justify-between mb-3">
-        <div className={`p-2.5 rounded-xl ${c.bg} ring-1 ${c.ring}`}>
+        <div className={`p-2.5 rounded-xl ${c.bg} ring-1 ${c.ring} transition-transform duration-200 group-hover:scale-110`}>
           {Icon && <Icon className={`w-5 h-5 ${c.icon}`} />}
         </div>
         {trend !== undefined && (
