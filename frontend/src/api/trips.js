@@ -6,7 +6,8 @@ export const tripsAPI = {
   create: (data) => api.post('/trips', data),
   update: (id, data) => api.put(`/trips/${id}`, data),
   delete: (id) => api.delete(`/trips/${id}`),
-  dispatch: (id) => api.patch(`/trips/${id}/dispatch`),
+  dispatch: (id, data) => api.patch(`/trips/${id}/dispatch`, data),
   complete: (id, data) => api.patch(`/trips/${id}/complete`, data),
   cancel: (id) => api.patch(`/trips/${id}/cancel`),
+  getMyTrips: (params) => api.get('/trips/my-trips', { params }),
 };

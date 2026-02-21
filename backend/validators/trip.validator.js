@@ -4,9 +4,7 @@ export const createTripSchema = Joi.object({
     vehicle: Joi.string().required().messages({
         "any.required": "Vehicle ID is required",
     }),
-    driver: Joi.string().required().messages({
-        "any.required": "Driver ID is required",
-    }),
+    driver: Joi.string().allow("", null).optional(),
     origin: Joi.string().required().messages({
         "any.required": "Origin is required",
     }),

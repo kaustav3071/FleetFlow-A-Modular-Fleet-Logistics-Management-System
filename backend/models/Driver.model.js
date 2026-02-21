@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 
 const driverSchema = new mongoose.Schema(
     {
+        // ─── Linked User Account ─────────────────────────────
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            unique: true,
+            sparse: true, // allows null for legacy drivers
+        },
+
         name: {
             type: String,
             required: [true, "Driver name is required"],

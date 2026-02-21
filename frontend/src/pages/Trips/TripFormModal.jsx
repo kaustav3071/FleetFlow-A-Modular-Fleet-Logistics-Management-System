@@ -10,9 +10,12 @@ import { tripsAPI } from '../../api/trips.js';
 import { vehiclesAPI } from '../../api/vehicles.js';
 import { driversAPI } from '../../api/drivers.js';
 import { useToast } from '../../components/ui/Toast.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
   const isEdit = !!trip;
+  const { user } = useAuth();
+  const isDispatcher = user?.role === 'dispatcher';
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [vehicles, setVehicles] = useState([]);
@@ -85,7 +88,7 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
         toast.success('Trip updated');
       } else {
         await tripsAPI.create(payload);
-        toast.success('Trip created as draft');
+        toast.success(isDispatcher ? 'Trip created and dispatched' : 'Trip created as draft');
       }
       onSuccess();
     } catch (err) {
@@ -99,14 +102,53 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
   }));
   const driverOptions = drivers.map(d => ({ value: d._id, label: `${d.name} — ${d.licenseNumber}` }));
 
+  const handleVehicleChange = (e) => {
+    const selectedVehicleId = e.target.value;
+    setForm({ ...form, vehicle: selectedVehicleId });
+
+    // Find the selected vehicle
+    const selectedVehicle = vehicles.find(v => v._id === selectedVehicleId);
+
+    if (selectedVehicle) {
+      // Filter drivers based on vehicle type and license category
+      const filteredDrivers = drivers.filter(driver => {
+        if (driver.licenseCategory.includes('truck')) return true; // Truck drivers can drive all vehicles
+        if (driver.licenseCategory.includes('van') && selectedVehicle.type !== 'truck') return true; // Van drivers can drive van, bike, and car
+        if (driver.licenseCategory.includes('bike') && selectedVehicle.type === 'bike') return true; // Bike drivers can only drive bikes
+        return false;
+      });
+
+      setDrivers(filteredDrivers);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Trip' : 'Create Trip'} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input name="origin" label="Origin" value={form.origin} onChange={handleChange} required placeholder="Mumbai" />
           <Input name="destination" label="Destination" value={form.destination} onChange={handleChange} required placeholder="Delhi" />
-          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" required />
-          <Select name="driver" label="Driver" options={driverOptions} value={form.driver} onChange={handleChange} placeholder="Select driver" required />
+          <Select
+            name="vehicle"
+            label="Vehicle"
+            options={vehicleOptions}
+            value={form.vehicle}
+            onChange={handleVehicleChange}
+            placeholder="Select vehicle"
+            required
+          />
+          {/* Driver field: shown for dispatchers (required), hidden for managers (they only create drafts) */}
+          {(isDispatcher || isEdit) && (
+            <Select
+              name="driver"
+              label="Driver"
+              options={driverOptions}
+              value={form.driver}
+              onChange={handleChange}
+              placeholder="Select driver"
+              required={isDispatcher}
+            />
+          )}
           <Input name="estimatedCost" label="Estimated Cost (₹)" type="number" step="0.01" value={form.estimatedCost} onChange={handleChange} placeholder="15000" />
           <Input name="cargoDescription" label="Cargo Description" value={form.cargoDescription} onChange={handleChange} placeholder="Electronics, 50 boxes" />
           <Input

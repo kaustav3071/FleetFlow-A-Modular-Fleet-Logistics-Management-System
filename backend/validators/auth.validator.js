@@ -15,7 +15,7 @@ export const registerSchema = Joi.object({
         "any.required": "Password is required",
     }),
     role: Joi.string()
-        .valid("manager", "dispatcher", "safety_officer", "analyst")
+        .valid("manager", "dispatcher", "safety_officer", "analyst", "driver")
         .default("dispatcher"),
 });
 

@@ -6,17 +6,18 @@ import asyncHandler from "../utils/asyncHandler.js";
 
 // POST /api/v1/expenses
 export const createExpense = asyncHandler(async (req, res) => {
-    const { vehicle: vehicleId } = req.body;
+    const { vehicle: vehicleId, distanceTraveled, costPerKm } = req.body;
     const vehicle = await Vehicle.findById(vehicleId);
     if (!vehicle) throw new ApiError(404, "Vehicle not found.");
 
-    const expenseData = { ...req.body, loggedBy: req.user._id };
+    const cost = distanceTraveled * costPerKm;
+    const expenseData = { ...req.body, cost, loggedBy: req.user._id };
     if (req.file) expenseData.receipt = req.file.path;
 
     const expense = await Expense.create(expenseData);
 
-    if (expense.type === "fuel") vehicle.totalFuelCost += expense.cost;
-    else if (expense.type === "maintenance") vehicle.totalMaintenanceCost += expense.cost;
+    if (expense.type === "fuel") vehicle.totalFuelCost += cost;
+    else if (expense.type === "maintenance") vehicle.totalMaintenanceCost += cost;
     await vehicle.save();
 
     const populated = await Expense.findById(expense._id)

@@ -13,7 +13,7 @@ router.get("/available", getAvailableDrivers);
 
 router.route("/")
     .get(getDrivers)
-    .post(authorize("manager", "dispatcher", "safety_officer"), uploadAvatar, validate(createDriverSchema, { arrayFields: ["licenseCategory"] }), createDriver);
+    .post(authorize("manager", "dispatcher"), uploadAvatar, validate(createDriverSchema, { arrayFields: ["licenseCategory"] }), createDriver);
 
 router.route("/:id")
     .get(getDriverById)

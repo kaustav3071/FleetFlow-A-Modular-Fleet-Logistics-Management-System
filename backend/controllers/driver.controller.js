@@ -1,10 +1,13 @@
 import Driver from "../models/Driver.model.js";
+import User from "../models/User.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
+
 // ─────────────────────────────────────────────────────────
 // POST /api/v1/drivers
+// Auto-creates a User account (role: "driver") for the driver
 // ─────────────────────────────────────────────────────────
 export const createDriver = asyncHandler(async (req, res) => {
     const driverData = { ...req.body };
@@ -13,10 +16,46 @@ export const createDriver = asyncHandler(async (req, res) => {
         driverData.avatar = req.file.path;
     }
 
-    const driver = await Driver.create(driverData);
+    // Require email for driver (needed for login)
+    if (!driverData.email) {
+        throw new ApiError(400, "Email is required. It will be used as the driver's login credential.");
+    }
+
+    // Check if a User with this email already exists
+    const existingUser = await User.findOne({ email: driverData.email });
+    if (existingUser) {
+        throw new ApiError(409, `A user account with email '${driverData.email}' already exists.`);
+    }
+
+    // Use custom password if provided, otherwise default
+    const driverPassword = driverData.password || "driver@123";
+
+    // Create the User account
+    const userAccount = await User.create({
+        name: driverData.name,
+        email: driverData.email,
+        password: driverPassword,
+        role: "driver",
+        isVerified: true,
+    });
+
+    // Remove password from driver data (it's a User field, not Driver field)
+    delete driverData.password;
+
+    // Create the driver and link to User
+    const driver = await Driver.create({
+        ...driverData,
+        userId: userAccount._id,
+    });
 
     res.status(201).json(
-        new ApiResponse(201, { driver }, "Driver created successfully.")
+        new ApiResponse(201, {
+            driver,
+            credentials: {
+                email: driverData.email,
+                password: driverPassword,
+            },
+        }, "Driver created successfully. Share the login credentials with the driver.")
     );
 });
 
@@ -127,6 +166,11 @@ export const deleteDriver = asyncHandler(async (req, res) => {
 
     if (driver.status === "on_trip") {
         throw new ApiError(400, "Cannot delete a driver who is currently on a trip.");
+    }
+
+    // Delete the linked User account if it exists
+    if (driver.userId) {
+        await User.findByIdAndDelete(driver.userId);
     }
 
     await Driver.findByIdAndDelete(req.params.id);

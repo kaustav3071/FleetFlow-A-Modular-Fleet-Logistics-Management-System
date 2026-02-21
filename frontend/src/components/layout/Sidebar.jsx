@@ -3,13 +3,14 @@ import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Truck, Users, Route, Wrench, Receipt,
-  BarChart3, ChevronLeft, ChevronRight, Zap
+  BarChart3, ChevronLeft, ChevronRight, Zap, ClipboardList
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { canView } from '../../utils/permissions.js';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { path: '/my-trips', label: 'My Trips', icon: ClipboardList, module: 'mytrips' },
   { path: '/vehicles', label: 'Vehicles', icon: Truck, module: 'vehicles' },
   { path: '/drivers', label: 'Drivers', icon: Users, module: 'drivers' },
   { path: '/trips', label: 'Trips', icon: Route, module: 'trips' },

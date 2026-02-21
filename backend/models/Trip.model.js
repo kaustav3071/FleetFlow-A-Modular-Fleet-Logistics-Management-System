@@ -10,7 +10,7 @@ const tripSchema = new mongoose.Schema(
         driver: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Driver",
-            required: [true, "Driver is required"],
+            default: null,
         },
 
         // ─── Route Info ──────────────────────────────────────

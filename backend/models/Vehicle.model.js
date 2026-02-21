@@ -73,6 +73,11 @@ const vehicleSchema = new mongoose.Schema(
             enum: ["petrol", "diesel", "electric", "cng", "hybrid"],
             default: "diesel",
         },
+        fuelCostPerKm: {
+            type: Number,
+            default: 10,
+            min: 0,
+        },
         // ─── Computed Fields (cached for performance) ────────
         totalTrips: {
             type: Number,

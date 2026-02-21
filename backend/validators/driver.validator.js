@@ -4,7 +4,13 @@ export const createDriverSchema = Joi.object({
     name: Joi.string().required().messages({
         "any.required": "Driver name is required",
     }),
-    email: Joi.string().email().allow(""),
+    email: Joi.string().email().required().messages({
+        "string.email": "Please provide a valid email",
+        "any.required": "Email is required (used as driver login credential)",
+    }),
+    password: Joi.string().min(6).max(128).optional().messages({
+        "string.min": "Password must be at least 6 characters",
+    }),
     phone: Joi.string().allow(""),
     licenseNumber: Joi.string().required().messages({
         "any.required": "License number is required",

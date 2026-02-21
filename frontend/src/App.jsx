@@ -15,12 +15,24 @@ import MaintenancePage from './pages/Maintenance/MaintenancePage.jsx';
 import ExpensesPage from './pages/Expenses/ExpensesPage.jsx';
 import AnalyticsPage from './pages/Analytics/AnalyticsPage.jsx';
 import ProfilePage from './pages/Profile/ProfilePage.jsx';
+import DriverDashboardPage from './pages/DriverDashboard/DriverDashboardPage.jsx';
 
 function AuthGuard({ children }) {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+  if (user) {
+    // Redirect drivers to their dashboard
+    if (user.role === 'driver') return <Navigate to="/my-trips" replace />;
+    return <Navigate to="/" replace />;
+  }
   return children;
+}
+
+// Redirect drivers from admin dashboard to their own My Trips page
+function DashboardRedirect() {
+  const { user } = useAuth();
+  if (user?.role === 'driver') return <Navigate to="/my-trips" replace />;
+  return <DashboardPage />;
 }
 
 export default function App() {
@@ -39,11 +51,18 @@ export default function App() {
                 <DashboardLayout />
               </ProtectedRoute>
             }>
-              {/* Dashboard — all roles */}
-              <Route index element={<DashboardPage />} />
+              {/* Dashboard — all roles (drivers redirect to /my-trips) */}
+              <Route index element={<DashboardRedirect />} />
 
               {/* Profile & Settings — all roles */}
               <Route path="/profile" element={<ProfilePage />} />
+
+              {/* Driver's My Trips dashboard */}
+              <Route path="/my-trips" element={
+                <ProtectedRoute roles={['driver']}>
+                  <DriverDashboardPage />
+                </ProtectedRoute>
+              } />
 
               {/* Vehicles — Manager (full), Dispatcher (view), Safety Officer (view) */}
               <Route path="/vehicles" element={

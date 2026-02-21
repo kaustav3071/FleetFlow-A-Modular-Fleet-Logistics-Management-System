@@ -13,6 +13,8 @@ import EmptyState from '../../components/ui/EmptyState.jsx';
 import ConfirmDialog from '../../components/ui/ConfirmDialog.jsx';
 import TripFormModal from './TripFormModal.jsx';
 import TripDetailModal from './TripDetailModal.jsx';
+import TripCompleteModal from './TripCompleteModal.jsx';
+import TripDispatchModal from './TripDispatchModal.jsx';
 import { TRIP_STATUS } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
@@ -36,6 +38,8 @@ export default function TripsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
+  const [completeTrip, setCompleteTrip] = useState(null);
+  const [dispatchTrip, setDispatchTrip] = useState(null);
 
   const debouncedSearch = useDebounce(search);
 
@@ -66,18 +70,13 @@ export default function TripsPage() {
     finally { setDeleting(false); }
   };
 
-  const handleDispatch = async (tripId) => {
-    setActionLoading(tripId);
-    try { await tripsAPI.dispatch(tripId); toast.success('Trip dispatched'); fetchTrips(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Dispatch failed'); }
-    finally { setActionLoading(null); }
+  const handleDispatch = (trip) => {
+    setDispatchTrip(trip);
   };
 
-  const handleComplete = async (tripId) => {
-    setActionLoading(tripId);
-    try { await tripsAPI.complete(tripId); toast.success('Trip completed'); fetchTrips(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Complete failed'); }
-    finally { setActionLoading(null); }
+  // Open the complete modal instead of completing directly
+  const handleComplete = (trip) => {
+    setCompleteTrip(trip);
   };
 
   const handleCancel = async (tripId) => {
@@ -126,7 +125,7 @@ export default function TripsPage() {
         <div className="flex items-center gap-1">
           {can.edit && row.status === 'draft' && (
             <button
-              onClick={(e) => { e.stopPropagation(); handleDispatch(row._id); }}
+              onClick={(e) => { e.stopPropagation(); handleDispatch(row); }}
               disabled={actionLoading === row._id}
               className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-110"
               title="Dispatch"
@@ -136,7 +135,7 @@ export default function TripsPage() {
           )}
           {can.edit && row.status === 'dispatched' && (
             <>
-              <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-110" title="Complete">
+              <button onClick={(e) => { e.stopPropagation(); handleComplete(row); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-110" title="Complete">
                 <CheckCircle className="w-4 h-4" />
               </button>
               <button onClick={(e) => { e.stopPropagation(); handleCancel(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer disabled:opacity-50 hover:scale-110" title="Cancel">
@@ -189,6 +188,8 @@ export default function TripsPage() {
 
       {showForm && <TripFormModal isOpen={showForm} onClose={() => { setShowForm(false); setEditTrip(null); }} trip={editTrip} onSuccess={() => { setShowForm(false); setEditTrip(null); fetchTrips(); }} />}
       {detailTrip && <TripDetailModal isOpen={!!detailTrip} onClose={() => setDetailTrip(null)} trip={detailTrip} />}
+      {completeTrip && <TripCompleteModal isOpen={!!completeTrip} onClose={() => setCompleteTrip(null)} trip={completeTrip} onSuccess={() => { setCompleteTrip(null); fetchTrips(); }} />}
+      {dispatchTrip && <TripDispatchModal isOpen={!!dispatchTrip} onClose={() => setDispatchTrip(null)} trip={dispatchTrip} onSuccess={() => { setDispatchTrip(null); fetchTrips(); }} />}
       <ConfirmDialog isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} loading={deleting} title="Delete Trip" message={`Delete this trip from ${deleteTarget?.origin} to ${deleteTarget?.destination}?`} />
     </motion.div>
   );

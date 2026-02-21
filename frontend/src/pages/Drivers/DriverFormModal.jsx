@@ -28,6 +28,7 @@ export default function DriverFormModal({ isOpen, onClose, driver, onSuccess }) 
   const [form, setForm] = useState({
     name: driver?.name || '',
     email: driver?.email || '',
+    password: '',
     phone: driver?.phone || '',
     licenseNumber: driver?.licenseNumber || '',
     licenseCategory: driver?.licenseCategory || [],
@@ -69,8 +70,16 @@ export default function DriverFormModal({ isOpen, onClose, driver, onSuccess }) 
         await driversAPI.update(driver._id, formData);
         toast.success('Driver updated');
       } else {
-        await driversAPI.create(formData);
-        toast.success('Driver created');
+        const { data } = await driversAPI.create(formData);
+        const creds = data.data?.credentials;
+        if (creds) {
+          toast.success(
+            `Driver created!\n\nLogin Email: ${creds.email}\nPassword: ${creds.password}\n\nShare these credentials with the driver.`,
+            { duration: 15000 }
+          );
+        } else {
+          toast.success('Driver created');
+        }
       }
       onSuccess();
     } catch (err) {
@@ -83,7 +92,10 @@ export default function DriverFormModal({ isOpen, onClose, driver, onSuccess }) 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input name="name" label="Full Name" value={form.name} onChange={handleChange} required placeholder="John Doe" />
-          <Input name="email" label="Email" type="email" value={form.email} onChange={handleChange} placeholder="john@example.com" />
+          <Input name="email" label={isEdit ? "Email" : "Email (used for login)"} type="email" value={form.email} onChange={handleChange} required={!isEdit} placeholder="john@example.com" />
+          {!isEdit && (
+            <Input name="password" label="Password (min 6 chars)" type="password" value={form.password} onChange={handleChange} placeholder="Leave empty for default: driver@123" minLength={form.password ? 6 : undefined} />
+          )}
           <Input name="phone" label="Phone" value={form.phone} onChange={handleChange} placeholder="+91 98765 43210" />
           <Input name="licenseNumber" label="License Number" value={form.licenseNumber} onChange={handleChange} required placeholder="DL-1234567890" />
           <Input name="licenseExpiry" label="License Expiry" type="date" value={form.licenseExpiry} onChange={handleChange} required />

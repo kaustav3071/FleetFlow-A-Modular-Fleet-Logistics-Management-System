@@ -1,68 +1,85 @@
 /**
  * FleetFlow RBAC Permissions Matrix
  * ─────────────────────────────────
- * Roles: manager, dispatcher, safety_officer, analyst
+ * Roles: manager, dispatcher, safety_officer, analyst, driver
  * Access levels: full, view_edit, view, none
  *
- * Module        | Manager          | Dispatcher | Safety Officer | Analyst
- * ──────────────|──────────────────|────────────|────────────────|─────────
- * Drivers       | Full Access      | View Only  | View/Edit      | No Access
- * Vehicles      | Full Access      | View Only  | View Only      | No Access
- * Trips         | Full Access      | Full Access| View Only      | View Only
- * Expenses      | Full Access      | View Only  | No Access      | View Only
- * Maintenance   | Full Access      | View Only  | View Only      | View Only
- * Analytics     | Full Access      | View Only  | View Only      | Full Access
- * Users         | Full (RBAC)      | No Access  | No Access      | No Access
+ * Module        | Manager          | Dispatcher | Safety Officer | Analyst   | Driver
+ * ──────────────|──────────────────|────────────|────────────────|───────────|────────
+ * Dashboard     | Full Access      | View Only  | View Only      | View Only | View Only
+ * My Trips      | No Access        | No Access  | No Access      | No Access | Full
+ * Drivers       | Full Access      | Full Access| View/Edit      | No Access | No Access
+ * Vehicles      | Full Access      | View Only  | View Only      | No Access | No Access
+ * Trips         | Full Access      | Full Access| View Only      | View Only | No Access
+ * Expenses      | Full Access      | View Only  | No Access      | View Only | No Access
+ * Maintenance   | Full Access      | View Only  | View Only      | View Only | No Access
+ * Analytics     | Full Access      | View Only  | View Only      | Full      | No Access
+ * Users         | Full (RBAC)      | No Access  | No Access      | No Access | No Access
  */
 
 const PERMISSIONS = {
     drivers: {
         manager: 'full',
-        dispatcher: 'view',
+        dispatcher: 'full',
         safety_officer: 'view_edit',
         analyst: 'none',
+        driver: 'none',
     },
     vehicles: {
         manager: 'full',
         dispatcher: 'view',
         safety_officer: 'view',
         analyst: 'none',
+        driver: 'none',
     },
     trips: {
         manager: 'full',
         dispatcher: 'full',
         safety_officer: 'view',
         analyst: 'view',
+        driver: 'none',
     },
     expenses: {
         manager: 'full',
         dispatcher: 'view',
         safety_officer: 'none',
         analyst: 'view',
+        driver: 'none',
     },
     maintenance: {
         manager: 'full',
         dispatcher: 'view',
         safety_officer: 'view',
         analyst: 'view',
+        driver: 'none',
     },
     analytics: {
         manager: 'full',
         dispatcher: 'view',
         safety_officer: 'view',
         analyst: 'full',
+        driver: 'none',
     },
     users: {
         manager: 'full',
         dispatcher: 'none',
         safety_officer: 'none',
         analyst: 'none',
+        driver: 'none',
     },
     dashboard: {
         manager: 'full',
         dispatcher: 'view',
         safety_officer: 'view',
         analyst: 'view',
+        driver: 'view',
+    },
+    mytrips: {
+        manager: 'none',
+        dispatcher: 'none',
+        safety_officer: 'none',
+        analyst: 'none',
+        driver: 'full',
     },
 };
 

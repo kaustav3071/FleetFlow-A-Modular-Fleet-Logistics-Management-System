@@ -191,8 +191,15 @@ export default function AuthPage() {
                   {isLogin ? 'Welcome back' : 'Create an account'}
                 </h2>
                 <p className="text-surface-500 mt-1.5">
-                  {isLogin ? 'Sign in to access your fleet dashboard' : 'Get started with your fleet management'}
+                  {isLogin
+                    ? 'Sign in to access your fleet dashboard'
+                    : 'Get started with your fleet management'}
                 </p>
+                {isLogin && (
+                  <p className="text-xs text-surface-400 mt-2 bg-surface-100 rounded-lg px-3 py-2">
+                    🚛 <strong>Drivers:</strong> Your login credentials are provided by your fleet manager when they add you to the system.
+                  </p>
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

@@ -29,8 +29,8 @@ const userSchema = new mongoose.Schema(
         role: {
             type: String,
             enum: {
-                values: ["manager", "dispatcher", "safety_officer", "analyst"],
-                message: "Role must be manager, dispatcher, safety_officer, or analyst",
+                values: ["manager", "dispatcher", "safety_officer", "analyst", "driver"],
+                message: "Role must be manager, dispatcher, safety_officer, analyst, or driver",
             },
             default: "dispatcher",
         },
