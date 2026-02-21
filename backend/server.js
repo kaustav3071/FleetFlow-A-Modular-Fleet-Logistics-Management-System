@@ -28,9 +28,12 @@ app.use(cors({
 }));
 
 // ─── Rate Limiting ───────────────────────────────────────
+
+// Disable or relax rate limits in development
+const isDev = process.env.NODE_ENV === "development";
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: isDev ? 10000 : 100,
   message: { success: false, message: "Too many requests. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
@@ -38,7 +41,7 @@ const generalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: isDev ? 1000 : 20,
   message: { success: false, message: "Too many auth attempts. Please try again later." },
 });
 

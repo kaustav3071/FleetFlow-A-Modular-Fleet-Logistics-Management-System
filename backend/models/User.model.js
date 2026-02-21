@@ -76,16 +76,15 @@ const userSchema = new mongoose.Schema(
 );
 
 // ─── Pre-save: Hash Password ─────────────────────────────
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
     // Only hash if the password field is modified
-    if (!this.isModified("password")) return next();
+    if (!this.isModified("password")) return;
 
     // Skip if no password (Google OAuth users)
-    if (!this.password) return next();
+    if (!this.password) return;
 
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
 });
 
 // ─── Instance Method: Compare Password ───────────────────

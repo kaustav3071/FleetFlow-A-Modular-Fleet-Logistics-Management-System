@@ -1,0 +1,71 @@
+import Modal from '../../components/ui/Modal.jsx';
+import Badge from '../../components/ui/Badge.jsx';
+import { VEHICLE_STATUS } from '../../utils/constants.js';
+import { formatCurrency, formatKm, formatDate } from '../../utils/formatters.js';
+import { Truck, Calendar, Fuel, Gauge, DollarSign, FileText } from 'lucide-react';
+
+export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
+  if (!vehicle) return null;
+  const status = VEHICLE_STATUS[vehicle.status] || {};
+
+  const fields = [
+    { icon: Truck, label: 'Type', value: vehicle.type },
+    { icon: Fuel, label: 'Fuel Type', value: vehicle.fuelType },
+    { icon: Gauge, label: 'Odometer', value: formatKm(vehicle.odometerReading || 0) },
+    { icon: DollarSign, label: 'Total Cost', value: formatCurrency(vehicle.totalCost || 0) },
+    { icon: Calendar, label: 'Year', value: vehicle.year },
+    { icon: Calendar, label: 'Insurance Expiry', value: vehicle.insuranceExpiry ? formatDate(vehicle.insuranceExpiry) : 'N/A' },
+  ];
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Vehicle Details" size="md">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-xl bg-surface-700/50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {vehicle.image ? (
+              <img src={vehicle.image} alt="" className="w-16 h-16 object-cover rounded-xl" />
+            ) : (
+              <Truck className="w-8 h-8 text-brand-400" />
+            )}
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white">{vehicle.registrationNumber}</h3>
+            <p className="text-sm text-surface-400">{vehicle.make} {vehicle.model}</p>
+            <Badge color={status.color || 'gray'} dot className="mt-2">{status.label || vehicle.status}</Badge>
+          </div>
+        </div>
+
+        {/* Fields */}
+        <div className="grid grid-cols-2 gap-4">
+          {fields.map((f) => (
+            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-800/40">
+              <f.icon className="w-4 h-4 text-surface-500 mt-0.5" />
+              <div>
+                <p className="text-xs text-surface-500">{f.label}</p>
+                <p className="text-sm font-medium text-surface-200 capitalize">{f.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {vehicle.capacity && (
+          <div className="p-3 rounded-xl bg-surface-800/40">
+            <p className="text-xs text-surface-500 mb-1">Capacity</p>
+            <p className="text-sm font-medium text-surface-200">{vehicle.capacity} tons</p>
+          </div>
+        )}
+
+        {vehicle.notes && (
+          <div className="p-3 rounded-xl bg-surface-800/40">
+            <div className="flex items-center gap-2 mb-1">
+              <FileText className="w-4 h-4 text-surface-500" />
+              <p className="text-xs text-surface-500">Notes</p>
+            </div>
+            <p className="text-sm text-surface-300">{vehicle.notes}</p>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}

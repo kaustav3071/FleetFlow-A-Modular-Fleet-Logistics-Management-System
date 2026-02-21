@@ -47,7 +47,8 @@ export const register = asyncHandler(async (req, res) => {
     });
 
     // Send verification email via BullMQ
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+    const frontendUrl = process.env.FRONTEND_URL.replace(/\/+$/, '');
+    const verificationUrl = `${frontendUrl}/verify-email/${verificationToken}`;
     await sendEmail({
         to: email,
         subject: "FleetFlow — Verify Your Email Address",
@@ -81,17 +82,17 @@ export const verifyEmail = asyncHandler(async (req, res) => {
         verificationToken: hashedToken,
         verificationTokenExpiry: { $gt: Date.now() },
     });
-
+    console.log('[VERIFY EMAIL] User found:', user ? user.email : null);
     if (!user) {
+        console.log('[VERIFY EMAIL] Invalid or expired token:', token);
         throw new ApiError(400, "Invalid or expired verification token.");
     }
-
     // Mark as verified
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpiry = undefined;
     await user.save();
-
+    console.log('[VERIFY EMAIL] User updated:', user.email, 'isVerified:', user.isVerified);
     res.status(200).json(
         new ApiResponse(200, null, "Email verified successfully! You can now login.")
     );
@@ -121,8 +122,8 @@ export const login = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid email or password.");
     }
 
-    // Check if email is verified
-    if (!user.isVerified) {
+    // Check if email is verified (skip in development)
+    if (!user.isVerified && process.env.NODE_ENV === 'production') {
         throw new ApiError(403, "Please verify your email before logging in. Check your inbox for the verification link.");
     }
 
@@ -151,6 +152,7 @@ export const login = asyncHandler(async (req, res) => {
                 avatar: user.avatar,
             },
             accessToken,
+            refreshToken,
         }, "Login successful!")
     );
 });
