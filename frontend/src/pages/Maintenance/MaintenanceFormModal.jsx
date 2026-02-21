@@ -10,7 +10,6 @@ import { SERVICE_TYPES } from '../../utils/constants.js';
 import toast from 'react-hot-toast';
 
 const statusOptions = [
-  { value: 'scheduled', label: 'Scheduled' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
 ];
@@ -24,9 +23,10 @@ export default function MaintenanceFormModal({ isOpen, onClose, record, onSucces
     serviceType: record?.serviceType || 'oil_change',
     description: record?.description || '',
     cost: record?.cost || '',
-    scheduledDate: record?.scheduledDate?.slice(0, 10) || '',
-    status: record?.status || 'scheduled',
+    serviceDate: record?.serviceDate?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+    status: record?.status || 'in_progress',
     vendor: record?.vendor || '',
+    odometerAtService: record?.odometerAtService || '',
     notes: record?.notes || '',
   });
 
@@ -63,16 +63,17 @@ export default function MaintenanceFormModal({ isOpen, onClose, record, onSucces
     } finally { setLoading(false); }
   };
 
-  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.registrationNumber} — ${v.make} ${v.model}` }));
+  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.name} — ${v.licensePlate}` }));
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Maintenance' : 'Log Maintenance'} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" />
+          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" required />
           <Select name="serviceType" label="Service Type" options={SERVICE_TYPES} value={form.serviceType} onChange={handleChange} />
-          <Input name="cost" label="Cost (₹)" type="number" step="0.01" value={form.cost} onChange={handleChange} placeholder="5000" />
-          <Input name="scheduledDate" label="Scheduled Date" type="date" value={form.scheduledDate} onChange={handleChange} />
+          <Input name="cost" label="Cost (₹)" type="number" step="0.01" value={form.cost} onChange={handleChange} required placeholder="5000" />
+          <Input name="serviceDate" label="Service Date" type="date" value={form.serviceDate} onChange={handleChange} required />
+          <Input name="odometerAtService" label="Odometer at Service (km)" type="number" value={form.odometerAtService} onChange={handleChange} />
           {isEdit && <Select name="status" label="Status" options={statusOptions} value={form.status} onChange={handleChange} />}
           <Input name="vendor" label="Vendor / Workshop" value={form.vendor} onChange={handleChange} placeholder="ABC Motors" />
         </div>

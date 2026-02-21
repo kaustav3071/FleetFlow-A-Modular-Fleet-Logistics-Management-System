@@ -1,8 +1,8 @@
 import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { VEHICLE_STATUS } from '../../utils/constants.js';
-import { formatCurrency, formatKm, formatDate } from '../../utils/formatters.js';
-import { Truck, Calendar, Fuel, Gauge, DollarSign, FileText } from 'lucide-react';
+import { formatCurrency, formatKm } from '../../utils/formatters.js';
+import { Truck, Fuel, Gauge, DollarSign, FileText, MapPin, Package } from 'lucide-react';
 
 export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
   if (!vehicle) return null;
@@ -11,10 +11,11 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
   const fields = [
     { icon: Truck, label: 'Type', value: vehicle.type },
     { icon: Fuel, label: 'Fuel Type', value: vehicle.fuelType },
-    { icon: Gauge, label: 'Odometer', value: formatKm(vehicle.odometerReading || 0) },
-    { icon: DollarSign, label: 'Total Cost', value: formatCurrency(vehicle.totalCost || 0) },
-    { icon: Calendar, label: 'Year', value: vehicle.year },
-    { icon: Calendar, label: 'Insurance Expiry', value: vehicle.insuranceExpiry ? formatDate(vehicle.insuranceExpiry) : 'N/A' },
+    { icon: Gauge, label: 'Odometer', value: formatKm(vehicle.currentOdometer || 0) },
+    { icon: Package, label: 'Max Capacity', value: `${vehicle.maxLoadCapacity || 0} ${vehicle.capacityUnit || 'kg'}` },
+    { icon: MapPin, label: 'Region', value: vehicle.region || 'N/A' },
+    { icon: DollarSign, label: 'Fuel Cost', value: formatCurrency(vehicle.totalFuelCost || 0) },
+    { icon: DollarSign, label: 'Maintenance Cost', value: formatCurrency(vehicle.totalMaintenanceCost || 0) },
   ];
 
   return (
@@ -30,8 +31,8 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{vehicle.registrationNumber}</h3>
-            <p className="text-sm text-surface-400">{vehicle.make} {vehicle.model}</p>
+            <h3 className="text-lg font-semibold text-white">{vehicle.name}</h3>
+            <p className="text-sm text-surface-400">{vehicle.licensePlate} {vehicle.model ? `• ${vehicle.model}` : ''}</p>
             <Badge color={status.color || 'gray'} dot className="mt-2">{status.label || vehicle.status}</Badge>
           </div>
         </div>
@@ -48,13 +49,6 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
             </div>
           ))}
         </div>
-
-        {vehicle.capacity && (
-          <div className="p-3 rounded-xl bg-surface-800/40">
-            <p className="text-xs text-surface-500 mb-1">Capacity</p>
-            <p className="text-sm font-medium text-surface-200">{vehicle.capacity} tons</p>
-          </div>
-        )}
 
         {vehicle.notes && (
           <div className="p-3 rounded-xl bg-surface-800/40">

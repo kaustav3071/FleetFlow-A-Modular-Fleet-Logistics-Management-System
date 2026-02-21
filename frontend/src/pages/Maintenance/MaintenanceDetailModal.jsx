@@ -1,8 +1,8 @@
 import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { MAINTENANCE_STATUS, SERVICE_TYPES } from '../../utils/constants.js';
-import { formatDate, formatCurrency } from '../../utils/formatters.js';
-import { Truck, Wrench, Calendar, DollarSign, Store, FileText } from 'lucide-react';
+import { formatDate, formatCurrency, formatKm } from '../../utils/formatters.js';
+import { Truck, Wrench, Calendar, DollarSign, Store, FileText, Gauge } from 'lucide-react';
 
 export default function MaintenanceDetailModal({ isOpen, onClose, record }) {
   if (!record) return null;
@@ -10,11 +10,12 @@ export default function MaintenanceDetailModal({ isOpen, onClose, record }) {
   const serviceLabel = SERVICE_TYPES.find(s => s.value === record.serviceType)?.label || record.serviceType;
 
   const fields = [
-    { icon: Truck, label: 'Vehicle', value: record.vehicle?.registrationNumber || 'N/A' },
+    { icon: Truck, label: 'Vehicle', value: record.vehicle?.name || record.vehicle?.licensePlate || 'N/A' },
     { icon: Wrench, label: 'Service Type', value: serviceLabel },
     { icon: DollarSign, label: 'Cost', value: formatCurrency(record.cost || 0) },
-    { icon: Calendar, label: 'Scheduled', value: record.scheduledDate ? formatDate(record.scheduledDate) : 'N/A' },
+    { icon: Calendar, label: 'Service Date', value: record.serviceDate ? formatDate(record.serviceDate) : 'N/A' },
     { icon: Calendar, label: 'Completed', value: record.completedDate ? formatDate(record.completedDate) : 'N/A' },
+    { icon: Gauge, label: 'Odometer at Service', value: record.odometerAtService ? formatKm(record.odometerAtService) : 'N/A' },
     { icon: Store, label: 'Vendor', value: record.vendor || 'N/A' },
   ];
 
@@ -24,7 +25,7 @@ export default function MaintenanceDetailModal({ isOpen, onClose, record }) {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-white capitalize">{serviceLabel}</h3>
-            <p className="text-sm text-surface-400">{record.vehicle?.registrationNumber}</p>
+            <p className="text-sm text-surface-400">{record.vehicle?.name || record.vehicle?.licensePlate}</p>
           </div>
           <Badge color={status.color || 'gray'} dot size="md">{status.label || record.status}</Badge>
         </div>

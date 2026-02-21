@@ -11,12 +11,12 @@ export default function TripDetailModal({ isOpen, onClose, trip }) {
   const fields = [
     { icon: MapPin, label: 'Origin', value: trip.origin },
     { icon: MapPin, label: 'Destination', value: trip.destination },
-    { icon: Truck, label: 'Vehicle', value: trip.vehicle?.registrationNumber || trip.vehicle || 'Unassigned' },
-    { icon: User, label: 'Driver', value: trip.driver?.name || trip.driver || 'Unassigned' },
-    { icon: Calendar, label: 'Scheduled', value: trip.scheduledDate ? formatDate(trip.scheduledDate) : 'N/A' },
+    { icon: Truck, label: 'Vehicle', value: trip.vehicle?.name || trip.vehicle?.licensePlate || 'Unassigned' },
+    { icon: User, label: 'Driver', value: trip.driver?.name || 'Unassigned' },
+    { icon: Calendar, label: 'Created', value: trip.createdAt ? formatDate(trip.createdAt) : 'N/A' },
     { icon: DollarSign, label: 'Est. Cost', value: trip.estimatedCost ? formatCurrency(trip.estimatedCost) : 'N/A' },
     { icon: Package, label: 'Cargo', value: trip.cargoDescription || 'N/A' },
-    { icon: Package, label: 'Weight', value: trip.cargoWeight ? `${trip.cargoWeight} tons` : 'N/A' },
+    { icon: Package, label: 'Weight', value: trip.cargoWeight ? `${trip.cargoWeight} ${trip.cargoUnit || 'kg'}` : 'N/A' },
   ];
 
   return (

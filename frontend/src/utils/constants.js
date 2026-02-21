@@ -25,13 +25,21 @@ export const MAINTENANCE_STATUS = {
   completed: { label: 'Completed', color: 'emerald' },
 };
 
-export const EXPENSE_TYPES = {
+export const EXPENSE_TYPE_CONFIG = {
   fuel: { label: 'Fuel', color: 'amber' },
   maintenance: { label: 'Maintenance', color: 'blue' },
   toll: { label: 'Toll', color: 'purple' },
   insurance: { label: 'Insurance', color: 'cyan' },
   other: { label: 'Other', color: 'slate' },
 };
+
+export const EXPENSE_TYPES = [
+  { value: 'fuel', label: 'Fuel' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'toll', label: 'Toll' },
+  { value: 'insurance', label: 'Insurance' },
+  { value: 'other', label: 'Other' },
+];
 
 export const VEHICLE_TYPES = [
   { value: 'truck', label: 'Truck' },

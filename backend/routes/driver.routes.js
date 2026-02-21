@@ -13,11 +13,11 @@ router.get("/available", getAvailableDrivers);
 
 router.route("/")
     .get(getDrivers)
-    .post(authorize("manager", "dispatcher", "safety_officer"), uploadAvatar, validate(createDriverSchema), createDriver);
+    .post(authorize("manager", "dispatcher", "safety_officer"), uploadAvatar, validate(createDriverSchema, { arrayFields: ["licenseCategory"] }), createDriver);
 
 router.route("/:id")
     .get(getDriverById)
-    .put(authorize("manager", "dispatcher", "safety_officer"), uploadAvatar, validate(updateDriverSchema), updateDriver)
+    .put(authorize("manager", "dispatcher", "safety_officer"), uploadAvatar, validate(updateDriverSchema, { arrayFields: ["licenseCategory"] }), updateDriver)
     .delete(authorize("manager"), deleteDriver);
 
 router.patch("/:id/status", authorize("manager", "dispatcher", "safety_officer"), updateDriverStatus);

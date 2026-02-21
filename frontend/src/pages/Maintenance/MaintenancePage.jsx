@@ -75,8 +75,8 @@ export default function MaintenancePage() {
       key: 'vehicle', label: 'Vehicle',
       render: (val) => (
         <div>
-          <p className="font-medium text-surface-200">{val?.registrationNumber || 'N/A'}</p>
-          <p className="text-xs text-surface-500">{val?.make} {val?.model}</p>
+          <p className="font-medium text-surface-200">{val?.name || 'N/A'}</p>
+          <p className="text-xs text-surface-500">{val?.licensePlate}</p>
         </div>
       ),
     },
@@ -99,14 +99,14 @@ export default function MaintenancePage() {
       render: (val) => formatCurrency(val || 0),
     },
     {
-      key: 'scheduledDate', label: 'Scheduled', sortable: true,
+      key: 'serviceDate', label: 'Service Date', sortable: true,
       render: (val) => val ? formatDate(val) : '-',
     },
     {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          {['scheduled', 'in_progress'].includes(row.status) && (
+          {row.status === 'in_progress' && (
             <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50" title="Mark Complete">
               <CheckCircle className="w-4 h-4" />
             </button>

@@ -13,7 +13,7 @@ import EmptyState from '../../components/ui/EmptyState.jsx';
 import ConfirmDialog from '../../components/ui/ConfirmDialog.jsx';
 import ExpenseFormModal from './ExpenseFormModal.jsx';
 import ExpenseDetailModal from './ExpenseDetailModal.jsx';
-import { EXPENSE_TYPES } from '../../utils/constants.js';
+import { EXPENSE_TYPES, EXPENSE_TYPE_CONFIG } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
 import toast from 'react-hot-toast';
@@ -68,18 +68,18 @@ export default function ExpensesPage() {
     {
       key: 'type', label: 'Type', sortable: true,
       render: (val) => {
-        const found = EXPENSE_TYPES.find(t => t.value === val);
-        return <Badge color={typeColors[val] || 'gray'} dot>{found?.label || val}</Badge>;
+        const config = EXPENSE_TYPE_CONFIG[val] || {};
+        return <Badge color={typeColors[val] || 'gray'} dot>{config.label || val}</Badge>;
       },
     },
     {
       key: 'vehicle', label: 'Vehicle',
       render: (val) => (
-        <span className="text-surface-300">{val?.registrationNumber || 'N/A'}</span>
+        <span className="text-surface-300">{val?.name || val?.licensePlate || 'N/A'}</span>
       ),
     },
     {
-      key: 'amount', label: 'Amount', sortable: true,
+      key: 'cost', label: 'Amount', sortable: true,
       render: (val) => <span className="font-semibold text-surface-200">{formatCurrency(val || 0)}</span>,
     },
     {

@@ -18,12 +18,11 @@ export default function ExpenseFormModal({ isOpen, onClose, expense, onSuccess }
   const [form, setForm] = useState({
     vehicle: expense?.vehicle?._id || expense?.vehicle || '',
     type: expense?.type || 'fuel',
-    amount: expense?.amount || '',
+    cost: expense?.cost || '',
     date: expense?.date?.slice(0, 10) || new Date().toISOString().slice(0, 10),
     description: expense?.description || '',
-    vendor: expense?.vendor || '',
-    odometerReading: expense?.odometerReading || '',
-    fuelQuantity: expense?.fuelQuantity || '',
+    fuelLiters: expense?.fuelLiters || '',
+    pricePerLiter: expense?.pricePerLiter || '',
   });
 
   useEffect(() => {
@@ -61,20 +60,21 @@ export default function ExpenseFormModal({ isOpen, onClose, expense, onSuccess }
     } finally { setLoading(false); }
   };
 
-  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.registrationNumber} — ${v.make} ${v.model}` }));
+  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.name} — ${v.licensePlate}` }));
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Expense' : 'Add Expense'} size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" />
+          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" required />
           <Select name="type" label="Expense Type" options={EXPENSE_TYPES} value={form.type} onChange={handleChange} />
-          <Input name="amount" label="Amount (₹)" type="number" step="0.01" value={form.amount} onChange={handleChange} required placeholder="5000" />
+          <Input name="cost" label="Cost (₹)" type="number" step="0.01" value={form.cost} onChange={handleChange} required placeholder="5000" />
           <Input name="date" label="Date" type="date" value={form.date} onChange={handleChange} required />
-          <Input name="vendor" label="Vendor" value={form.vendor} onChange={handleChange} placeholder="Fuel Station / Shop" />
-          <Input name="odometerReading" label="Odometer (km)" type="number" value={form.odometerReading} onChange={handleChange} />
           {form.type === 'fuel' && (
-            <Input name="fuelQuantity" label="Fuel Quantity (liters)" type="number" step="0.1" value={form.fuelQuantity} onChange={handleChange} placeholder="50" />
+            <>
+              <Input name="fuelLiters" label="Fuel Quantity (liters)" type="number" step="0.1" value={form.fuelLiters} onChange={handleChange} placeholder="50" />
+              <Input name="pricePerLiter" label="Price per Liter (₹)" type="number" step="0.01" value={form.pricePerLiter} onChange={handleChange} placeholder="100" />
+            </>
           )}
         </div>
         <Textarea name="description" label="Description" value={form.description} onChange={handleChange} placeholder="Describe the expense..." />

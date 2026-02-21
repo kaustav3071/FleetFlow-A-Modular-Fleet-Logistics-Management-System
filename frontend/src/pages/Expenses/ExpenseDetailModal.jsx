@@ -1,25 +1,29 @@
 import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
-import { EXPENSE_TYPES } from '../../utils/constants.js';
-import { formatDate, formatCurrency, formatKm } from '../../utils/formatters.js';
-import { Truck, Tag, DollarSign, Calendar, Store, Fuel, FileText } from 'lucide-react';
+import { EXPENSE_TYPES, EXPENSE_TYPE_CONFIG } from '../../utils/constants.js';
+import { formatDate, formatCurrency } from '../../utils/formatters.js';
+import { Truck, Tag, DollarSign, Calendar, Fuel, FileText } from 'lucide-react';
 
 export default function ExpenseDetailModal({ isOpen, onClose, expense }) {
   if (!expense) return null;
-  const typeLabel = EXPENSE_TYPES.find(t => t.value === expense.type)?.label || expense.type;
+  const typeConfig = EXPENSE_TYPE_CONFIG[expense.type] || {};
+  const typeLabel = typeConfig.label || expense.type;
   const typeColors = { fuel: 'orange', maintenance: 'blue', toll: 'purple', insurance: 'cyan', other: 'gray' };
 
   const fields = [
-    { icon: Truck, label: 'Vehicle', value: expense.vehicle?.registrationNumber || 'N/A' },
+    { icon: Truck, label: 'Vehicle', value: expense.vehicle?.name || expense.vehicle?.licensePlate || 'N/A' },
     { icon: Tag, label: 'Type', value: typeLabel },
-    { icon: DollarSign, label: 'Amount', value: formatCurrency(expense.amount || 0) },
+    { icon: DollarSign, label: 'Cost', value: formatCurrency(expense.cost || 0) },
     { icon: Calendar, label: 'Date', value: formatDate(expense.date) },
-    { icon: Store, label: 'Vendor', value: expense.vendor || 'N/A' },
-    { icon: Fuel, label: 'Odometer', value: expense.odometerReading ? formatKm(expense.odometerReading) : 'N/A' },
   ];
 
-  if (expense.type === 'fuel' && expense.fuelQuantity) {
-    fields.push({ icon: Fuel, label: 'Fuel Qty', value: `${expense.fuelQuantity} liters` });
+  if (expense.type === 'fuel') {
+    if (expense.fuelLiters) {
+      fields.push({ icon: Fuel, label: 'Fuel Qty', value: `${expense.fuelLiters} liters` });
+    }
+    if (expense.pricePerLiter) {
+      fields.push({ icon: DollarSign, label: 'Price/Liter', value: formatCurrency(expense.pricePerLiter) });
+    }
   }
 
   return (
@@ -27,8 +31,8 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense }) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">{formatCurrency(expense.amount || 0)}</h3>
-            <p className="text-sm text-surface-400">{expense.vehicle?.registrationNumber}</p>
+            <h3 className="text-lg font-semibold text-white">{formatCurrency(expense.cost || 0)}</h3>
+            <p className="text-sm text-surface-400">{expense.vehicle?.name || expense.vehicle?.licensePlate}</p>
           </div>
           <Badge color={typeColors[expense.type] || 'gray'} dot size="md">{typeLabel}</Badge>
         </div>

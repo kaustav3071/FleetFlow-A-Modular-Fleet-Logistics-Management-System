@@ -93,8 +93,8 @@ export default function VehiclesPage() {
 
   const columns = [
     {
-      key: 'registrationNumber',
-      label: 'Registration',
+      key: 'name',
+      label: 'Vehicle',
       sortable: true,
       render: (val, row) => (
         <div className="flex items-center gap-3">
@@ -107,7 +107,7 @@ export default function VehiclesPage() {
           </div>
           <div>
             <p className="font-medium text-surface-200">{val}</p>
-            <p className="text-xs text-surface-500">{row.make} {row.model}</p>
+            <p className="text-xs text-surface-500">{row.licensePlate}</p>
           </div>
         </div>
       ),
@@ -128,16 +128,16 @@ export default function VehiclesPage() {
       },
     },
     {
-      key: 'odometerReading',
+      key: 'currentOdometer',
       label: 'Odometer',
       sortable: true,
       render: (val) => formatKm(val || 0),
     },
     {
-      key: 'totalCost',
-      label: 'Total Cost',
+      key: 'maxLoadCapacity',
+      label: 'Capacity',
       sortable: true,
-      render: (val) => formatCurrency(val || 0),
+      render: (val, row) => `${val || 0} ${row.capacityUnit || 'kg'}`,
     },
     {
       key: 'actions',
@@ -261,7 +261,7 @@ export default function VehiclesPage() {
         onConfirm={handleDelete}
         loading={deleting}
         title="Delete Vehicle"
-        message={`Delete vehicle ${deleteTarget?.registrationNumber}? This action cannot be undone.`}
+        message={`Delete vehicle ${deleteTarget?.name || deleteTarget?.licensePlate}? This action cannot be undone.`}
       />
     </motion.div>
   );

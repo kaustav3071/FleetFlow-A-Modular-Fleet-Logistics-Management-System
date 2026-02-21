@@ -40,9 +40,10 @@ const userSchema = new mongoose.Schema(
         },
 
         // ─── Email Verification ──────────────────────────────
+        // NOTE: Defaulting to true to skip email verification for development
         isVerified: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         verificationToken: String,
         verificationTokenExpiry: Date,

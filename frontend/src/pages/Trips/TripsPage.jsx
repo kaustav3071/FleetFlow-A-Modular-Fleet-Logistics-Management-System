@@ -96,7 +96,7 @@ export default function TripsPage() {
     },
     {
       key: 'vehicle', label: 'Vehicle',
-      render: (val) => <span className="text-surface-400">{val?.registrationNumber || val || '-'}</span>,
+      render: (val) => <span className="text-surface-400">{val?.name || val?.licensePlate || '-'}</span>,
     },
     {
       key: 'driver', label: 'Driver',
@@ -110,7 +110,7 @@ export default function TripsPage() {
       },
     },
     {
-      key: 'scheduledDate', label: 'Scheduled', sortable: true,
+      key: 'createdAt', label: 'Created', sortable: true,
       render: (val) => val ? formatDate(val) : '-',
     },
     {

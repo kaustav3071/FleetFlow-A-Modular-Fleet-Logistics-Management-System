@@ -19,10 +19,10 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
     destination: trip?.destination || '',
     vehicle: trip?.vehicle?._id || trip?.vehicle || '',
     driver: trip?.driver?._id || trip?.driver || '',
-    scheduledDate: trip?.scheduledDate?.slice(0, 10) || '',
     estimatedCost: trip?.estimatedCost || '',
     cargoDescription: trip?.cargoDescription || '',
     cargoWeight: trip?.cargoWeight || '',
+    cargoUnit: trip?.cargoUnit || 'kg',
     notes: trip?.notes || '',
   });
 
@@ -67,7 +67,7 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
     } finally { setLoading(false); }
   };
 
-  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.registrationNumber} — ${v.make} ${v.model}` }));
+  const vehicleOptions = vehicles.map(v => ({ value: v._id, label: `${v.name} — ${v.licensePlate}` }));
   const driverOptions = drivers.map(d => ({ value: d._id, label: `${d.name} — ${d.licenseNumber}` }));
 
   return (
@@ -76,12 +76,12 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input name="origin" label="Origin" value={form.origin} onChange={handleChange} required placeholder="Mumbai" />
           <Input name="destination" label="Destination" value={form.destination} onChange={handleChange} required placeholder="Delhi" />
-          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" />
-          <Select name="driver" label="Driver" options={driverOptions} value={form.driver} onChange={handleChange} placeholder="Select driver" />
-          <Input name="scheduledDate" label="Scheduled Date" type="date" value={form.scheduledDate} onChange={handleChange} />
+          <Select name="vehicle" label="Vehicle" options={vehicleOptions} value={form.vehicle} onChange={handleChange} placeholder="Select vehicle" required />
+          <Select name="driver" label="Driver" options={driverOptions} value={form.driver} onChange={handleChange} placeholder="Select driver" required />
           <Input name="estimatedCost" label="Estimated Cost (₹)" type="number" step="0.01" value={form.estimatedCost} onChange={handleChange} placeholder="15000" />
           <Input name="cargoDescription" label="Cargo Description" value={form.cargoDescription} onChange={handleChange} placeholder="Electronics, 50 boxes" />
-          <Input name="cargoWeight" label="Cargo Weight (tons)" type="number" step="0.1" value={form.cargoWeight} onChange={handleChange} placeholder="5.5" />
+          <Input name="cargoWeight" label="Cargo Weight (kg)" type="number" step="0.1" value={form.cargoWeight} onChange={handleChange} placeholder="500" required />
+          <Select name="cargoUnit" label="Weight Unit" options={[{ value: 'kg', label: 'Kilograms (kg)' }, { value: 'tons', label: 'Tons' }]} value={form.cargoUnit} onChange={handleChange} />
         </div>
         <Textarea name="notes" label="Notes" value={form.notes} onChange={handleChange} placeholder="Additional trip notes..." />
 

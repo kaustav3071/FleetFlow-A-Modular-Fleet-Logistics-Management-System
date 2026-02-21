@@ -2,7 +2,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { DRIVER_STATUS } from '../../utils/constants.js';
 import { formatDate } from '../../utils/formatters.js';
-import { User, Phone, Mail, CreditCard, Calendar, Shield, MapPin } from 'lucide-react';
+import { User, Phone, Mail, CreditCard, Calendar, Shield, Truck, FileText } from 'lucide-react';
 
 export default function DriverDetailModal({ isOpen, onClose, driver }) {
   if (!driver) return null;
@@ -11,13 +11,18 @@ export default function DriverDetailModal({ isOpen, onClose, driver }) {
   const safetyScore = driver.safetyScore ?? 100;
   const safetyColor = safetyScore >= 80 ? 'emerald' : safetyScore >= 60 ? 'yellow' : 'red';
 
+  // Format license categories
+  const licenseCategories = Array.isArray(driver.licenseCategory)
+    ? driver.licenseCategory.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')
+    : driver.licenseCategory || 'N/A';
+
   const fields = [
-    { icon: Mail, label: 'Email', value: driver.email },
+    { icon: Mail, label: 'Email', value: driver.email || 'N/A' },
     { icon: Phone, label: 'Phone', value: driver.phone || 'N/A' },
-    { icon: CreditCard, label: 'License', value: driver.licenseNumber },
+    { icon: CreditCard, label: 'License Number', value: driver.licenseNumber },
+    { icon: Truck, label: 'License Categories', value: licenseCategories },
     { icon: Calendar, label: 'License Expiry', value: driver.licenseExpiry ? formatDate(driver.licenseExpiry) : 'N/A' },
     { icon: Shield, label: 'Safety Score', value: safetyScore },
-    { icon: MapPin, label: 'Address', value: driver.address || 'N/A' },
   ];
 
   return (
@@ -33,7 +38,9 @@ export default function DriverDetailModal({ isOpen, onClose, driver }) {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">{driver.name}</h3>
-            <p className="text-sm text-surface-400">{driver.experience ? `${driver.experience} yrs experience` : 'Driver'}</p>
+            <p className="text-sm text-surface-400">
+              {driver.totalTripsCompleted || 0} trips completed
+            </p>
             <div className="flex gap-2 mt-2">
               <Badge color={status.color || 'gray'} dot>{status.label || driver.status}</Badge>
               <Badge color={safetyColor}>Score: {safetyScore}</Badge>
@@ -51,6 +58,16 @@ export default function DriverDetailModal({ isOpen, onClose, driver }) {
             </div>
           ))}
         </div>
+
+        {driver.notes && (
+          <div className="p-3 rounded-xl bg-surface-800/40">
+            <div className="flex items-center gap-2 mb-1">
+              <FileText className="w-4 h-4 text-surface-500" />
+              <p className="text-xs text-surface-500">Notes</p>
+            </div>
+            <p className="text-sm text-surface-300">{driver.notes}</p>
+          </div>
+        )}
       </div>
     </Modal>
   );
