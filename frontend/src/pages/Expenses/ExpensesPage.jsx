@@ -16,9 +16,10 @@ import ExpenseDetailModal from './ExpenseDetailModal.jsx';
 import { EXPENSE_TYPES, EXPENSE_TYPE_CONFIG } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function ExpensesPage() {
+  const toast = useToast();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -75,12 +76,12 @@ export default function ExpensesPage() {
     {
       key: 'vehicle', label: 'Vehicle',
       render: (val) => (
-        <span className="text-surface-300">{val?.name || val?.licensePlate || 'N/A'}</span>
+        <span className="text-surface-700">{val?.name || val?.licensePlate || 'N/A'}</span>
       ),
     },
     {
       key: 'cost', label: 'Amount', sortable: true,
-      render: (val) => <span className="font-semibold text-surface-200">{formatCurrency(val || 0)}</span>,
+      render: (val) => <span className="font-semibold text-surface-800">{formatCurrency(val || 0)}</span>,
     },
     {
       key: 'date', label: 'Date', sortable: true,
@@ -94,9 +95,9 @@ export default function ExpensesPage() {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={(e) => { e.stopPropagation(); setDetailExpense(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setEditExpense(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-500 hover:text-brand-400 hover:bg-brand-500/10 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailExpense(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setEditExpense(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
         </div>
       ),
     },

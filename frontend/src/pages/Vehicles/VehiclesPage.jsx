@@ -18,9 +18,10 @@ import VehicleDetailModal from './VehicleDetailModal.jsx';
 import { VEHICLE_STATUS, VEHICLE_TYPES } from '../../utils/constants.js';
 import { formatCurrency, formatKm, formatDate } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function VehiclesPage() {
+  const toast = useToast();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -98,15 +99,15 @@ export default function VehiclesPage() {
       sortable: true,
       render: (val, row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-surface-700/50 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
             {row.image ? (
               <img src={row.image} alt="" className="w-9 h-9 rounded-lg object-cover" />
             ) : (
-              <Truck className="w-4 h-4 text-brand-400" />
+              <Truck className="w-4 h-4 text-brand-600" />
             )}
           </div>
           <div>
-            <p className="font-medium text-surface-200">{val}</p>
+            <p className="font-medium text-surface-800">{val}</p>
             <p className="text-xs text-surface-500">{row.licensePlate}</p>
           </div>
         </div>
@@ -116,7 +117,7 @@ export default function VehiclesPage() {
       key: 'type',
       label: 'Type',
       sortable: true,
-      render: (val) => <span className="capitalize text-surface-400">{val}</span>,
+      render: (val) => <span className="capitalize text-surface-600">{val}</span>,
     },
     {
       key: 'status',
@@ -146,19 +147,19 @@ export default function VehiclesPage() {
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); setDetailVehicle(row); }}
-            className="p-1.5 rounded-lg text-surface-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setEditVehicle(row); setShowForm(true); }}
-            className="p-1.5 rounded-lg text-surface-500 hover:text-brand-400 hover:bg-brand-500/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"
           >
             <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }}
-            className="p-1.5 rounded-lg text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
           </button>

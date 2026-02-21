@@ -22,21 +22,21 @@ export default function Pagination({ page, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="p-2 rounded-lg text-surface-400 hover:text-surface-700 hover:bg-surface-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
       {getPages().map((p, i) =>
         p === '...' ? (
-          <span key={`dots-${i}`} className="px-2 text-surface-600 text-sm">...</span>
+          <span key={`dots-${i}`} className="px-2 text-surface-400 text-sm">...</span>
         ) : (
           <button
             key={p}
             onClick={() => onPageChange(p)}
             className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-all cursor-pointer
               ${p === page
-                ? 'bg-brand-500 text-surface-900 shadow-lg shadow-brand-500/20'
-                : 'text-surface-400 hover:text-white hover:bg-surface-700'
+                ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/20'
+                : 'text-surface-500 hover:text-surface-800 hover:bg-surface-100'
               }`}
           >
             {p}
@@ -46,7 +46,7 @@ export default function Pagination({ page, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-surface-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="p-2 rounded-lg text-surface-400 hover:text-surface-700 hover:bg-surface-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

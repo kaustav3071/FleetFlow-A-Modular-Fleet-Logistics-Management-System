@@ -3,7 +3,7 @@ import { Search, X } from 'lucide-react';
 export default function SearchBar({ value, onChange, placeholder = 'Search...', className = '' }) {
   return (
     <div className={`relative ${className}`}>
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
       <input
         type="text"
         value={value}
@@ -14,7 +14,7 @@ export default function SearchBar({ value, onChange, placeholder = 'Search...', 
       {value && (
         <button
           onClick={() => onChange('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-white transition-colors cursor-pointer"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-700 transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

@@ -15,7 +15,7 @@ import DonutChart from '../../components/charts/DonutChart.jsx';
 import BarChartComponent from '../../components/charts/BarChart.jsx';
 import { formatCurrency, formatDate, formatKm } from '../../utils/formatters.js';
 import { TRIP_STATUS, VEHICLE_STATUS } from '../../utils/constants.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function DashboardPage() {
   const [dashboard, setDashboard] = useState(null);
@@ -23,6 +23,7 @@ export default function DashboardPage() {
   const [costBreakdown, setCostBreakdown] = useState([]);
   const [recentTrips, setRecentTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,16 +74,16 @@ export default function DashboardPage() {
 
   const costDonutData = Array.isArray(costBreakdown)
     ? costBreakdown.map(c => ({
-        name: c.type || c._id || c.category || 'Unknown',
-        value: c.totalCost || c.total || c.amount || 0,
-      }))
+      name: c.type || c._id || c.category || 'Unknown',
+      value: c.totalCost || c.total || c.amount || 0,
+    }))
     : [];
 
   const monthlyChartData = Array.isArray(monthlyExpenses)
     ? monthlyExpenses.map(m => ({
-        name: m.month ? `${m.month}/${m.year}` : m._id ? `${m._id.month}/${m._id.year}` : '',
-        amount: m.totalCost || m.total || m.amount || 0,
-      }))
+      name: m.month ? `${m.month}/${m.year}` : m._id ? `${m._id.month}/${m._id.year}` : '',
+      amount: m.totalCost || m.total || m.amount || 0,
+    }))
     : [];
 
   return (
@@ -114,12 +115,12 @@ export default function DashboardPage() {
               dataKey="amount"
               xKey="name"
               title="Monthly Expenses Trend"
-              color="#F59E0B"
+              color="#14B8A6"
               height={320}
             />
           ) : (
             <Card className="p-5 flex items-center justify-center h-[380px]">
-              <p className="text-surface-500 text-sm">No expense trend data yet</p>
+              <p className="text-surface-400 text-sm">No expense trend data yet</p>
             </Card>
           )}
         </div>
@@ -133,7 +134,7 @@ export default function DashboardPage() {
             />
           ) : (
             <Card className="p-5 flex items-center justify-center h-[380px]">
-              <p className="text-surface-500 text-sm">No vehicle data yet</p>
+              <p className="text-surface-400 text-sm">No vehicle data yet</p>
             </Card>
           )}
         </div>
@@ -154,7 +155,7 @@ export default function DashboardPage() {
         ) : (
           <Card className="p-5">
             <h3 className="section-title mb-4">Cost Breakdown</h3>
-            <p className="text-surface-500 text-sm text-center py-8">No cost data yet</p>
+            <p className="text-surface-400 text-sm text-center py-8">No cost data yet</p>
           </Card>
         )}
 
@@ -163,21 +164,21 @@ export default function DashboardPage() {
           <h3 className="section-title mb-4">Recent Trips</h3>
           <div className="space-y-3">
             {recentTrips.length === 0 ? (
-              <p className="text-surface-500 text-sm text-center py-8">No trips yet</p>
+              <p className="text-surface-400 text-sm text-center py-8">No trips yet</p>
             ) : (
               recentTrips.map((trip) => {
                 const statusConfig = TRIP_STATUS[trip.status] || {};
                 return (
-                  <div key={trip._id} className="flex items-center justify-between py-2.5 border-b border-surface-700/30 last:border-0">
+                  <div key={trip._id} className="flex items-center justify-between py-2.5 border-b border-surface-100 last:border-0">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-surface-700/50 flex items-center justify-center">
-                        <Route className="w-4 h-4 text-brand-400" />
+                      <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center">
+                        <Route className="w-4 h-4 text-brand-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-surface-200">
+                        <p className="text-sm font-medium text-surface-800">
                           {trip.origin} → {trip.destination}
                         </p>
-                        <p className="text-xs text-surface-500">{formatDate(trip.createdAt)}</p>
+                        <p className="text-xs text-surface-400">{formatDate(trip.createdAt)}</p>
                       </div>
                     </div>
                     <Badge color={statusConfig.color || 'gray'} dot>

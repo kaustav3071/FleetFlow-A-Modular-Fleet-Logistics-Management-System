@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @layer base {
   * {
     margin: 0;
@@ -13,9 +15,11 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #F8FAFC;
+    color: #1E293B;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar — light theme */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -26,43 +30,65 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #CBD5E1;
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #94A3B8;
   }
 }
 
 @layer components {
+  /* ── Cards ── */
   .glass-card {
-    @apply bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl;
+    @apply bg-white border border-surface-200 rounded-xl shadow-card;
   }
 
   .glass-card-hover {
-    @apply glass-card hover:bg-surface-800/80 hover:border-surface-600/50 transition-all duration-200;
+    @apply glass-card hover:shadow-card-hover hover:border-surface-300 transition-all duration-200;
   }
 
+  /* ── Typography ── */
   .stat-number {
-    @apply text-4xl font-extrabold tracking-tight;
+    @apply text-4xl font-extrabold tracking-tight text-surface-900;
   }
 
   .page-title {
-    @apply text-2xl font-bold text-white;
+    @apply text-2xl font-bold text-surface-900;
   }
 
   .section-title {
-    @apply text-lg font-semibold text-surface-200;
+    @apply text-lg font-semibold text-surface-800;
   }
 
   .label {
-    @apply text-sm font-medium text-surface-400;
+    @apply text-sm font-medium text-surface-600;
   }
 
+  /* ── Inputs ── */
   .input-base {
-    @apply w-full px-3 py-2.5 bg-surface-900/80 border border-surface-600/50 rounded-lg text-white text-sm
-           placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/60
+    @apply w-full px-3 py-2.5 bg-white border border-surface-300 rounded-lg text-surface-900 text-sm
+           placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500
            transition-all duration-200;
+  }
+
+  /* ── Toasts ── */
+  .toast-container {
+    @apply fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none;
+  }
+
+  .toast-item {
+    @apply pointer-events-auto bg-white rounded-xl shadow-dropdown border border-surface-200
+           px-4 py-3.5 flex items-start gap-3 min-w-[340px] max-w-[420px]
+           animate-toast-in relative overflow-hidden;
+  }
+
+  .toast-item.toast-exit {
+    @apply animate-toast-out;
+  }
+
+  .toast-progress {
+    @apply absolute bottom-0 left-0 h-[3px] rounded-full;
   }
 }

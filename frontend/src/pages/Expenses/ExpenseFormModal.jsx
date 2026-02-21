@@ -8,11 +8,12 @@ import Button from '../../components/ui/Button.jsx';
 import { expensesAPI } from '../../api/expenses.js';
 import { vehiclesAPI } from '../../api/vehicles.js';
 import { EXPENSE_TYPES } from '../../utils/constants.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function ExpenseFormModal({ isOpen, onClose, expense, onSuccess }) {
   const isEdit = !!expense;
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
   const [receipt, setReceipt] = useState(null);
   const [vehicles, setVehicles] = useState([]);
   const [form, setForm] = useState({
@@ -81,14 +82,14 @@ export default function ExpenseFormModal({ isOpen, onClose, expense, onSuccess }
 
         <div className="space-y-1.5">
           <label className="label">Receipt</label>
-          <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-surface-600 hover:border-brand-500/50 transition-colors cursor-pointer bg-surface-800/30">
+          <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-surface-300 hover:border-brand-500/50 transition-colors cursor-pointer bg-surface-50">
             <Upload className="w-5 h-5 text-surface-500" />
-            <span className="text-sm text-surface-400">{receipt ? receipt.name : 'Upload receipt image'}</span>
+            <span className="text-sm text-surface-500">{receipt ? receipt.name : 'Upload receipt image'}</span>
             <input type="file" accept="image/*" className="hidden" onChange={(e) => setReceipt(e.target.files[0])} />
           </label>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-surface-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-surface-200">
           <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>{isEdit ? 'Update' : 'Create'} Expense</Button>
         </div>

@@ -16,9 +16,10 @@ import DriverDetailModal from './DriverDetailModal.jsx';
 import { DRIVER_STATUS } from '../../utils/constants.js';
 import { formatDate } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function DriversPage() {
+  const toast = useToast();
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -85,11 +86,11 @@ export default function DriversPage() {
             {row.avatar ? (
               <img src={row.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
             ) : (
-              <span className="text-sm font-semibold text-brand-400">{val?.[0]?.toUpperCase()}</span>
+              <span className="text-sm font-semibold text-brand-600">{val?.[0]?.toUpperCase()}</span>
             )}
           </div>
           <div>
-            <p className="font-medium text-surface-200">{val}</p>
+            <p className="font-medium text-surface-800">{val}</p>
             <p className="text-xs text-surface-500">{row.email}</p>
           </div>
         </div>
@@ -115,7 +116,7 @@ export default function DriversPage() {
       key: 'safetyScore', label: 'Safety', sortable: true,
       render: (val) => {
         const score = val ?? 100;
-        const color = score >= 80 ? 'text-emerald-400' : score >= 60 ? 'text-amber-400' : 'text-red-400';
+        const color = score >= 80 ? 'text-emerald-600' : score >= 60 ? 'text-amber-600' : 'text-red-600';
         return <span className={`font-semibold ${color}`}>{score}</span>;
       },
     },
@@ -123,9 +124,9 @@ export default function DriversPage() {
       key: 'actions', label: '',
       render: (_, row) => (
         <div className="flex items-center gap-1">
-          <button onClick={(e) => { e.stopPropagation(); setDetailDriver(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setEditDriver(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-500 hover:text-brand-400 hover:bg-brand-500/10 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailDriver(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setEditDriver(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
         </div>
       ),
     },

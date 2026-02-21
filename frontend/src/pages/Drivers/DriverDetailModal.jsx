@@ -33,11 +33,11 @@ export default function DriverDetailModal({ isOpen, onClose, driver }) {
             {driver.avatar ? (
               <img src={driver.avatar} alt="" className="w-16 h-16 rounded-full object-cover" />
             ) : (
-              <span className="text-xl font-bold text-brand-400">{driver.name?.[0]?.toUpperCase()}</span>
+              <span className="text-xl font-bold text-brand-600">{driver.name?.[0]?.toUpperCase()}</span>
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{driver.name}</h3>
+            <h3 className="text-lg font-semibold text-surface-900">{driver.name}</h3>
             <p className="text-sm text-surface-400">
               {driver.totalTripsCompleted || 0} trips completed
             </p>
@@ -49,23 +49,23 @@ export default function DriverDetailModal({ isOpen, onClose, driver }) {
         </div>
         <div className="grid grid-cols-2 gap-4">
           {fields.map((f) => (
-            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-800/40">
+            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-50">
               <f.icon className="w-4 h-4 text-surface-500 mt-0.5" />
               <div>
                 <p className="text-xs text-surface-500">{f.label}</p>
-                <p className="text-sm font-medium text-surface-200">{f.value}</p>
+                <p className="text-sm font-medium text-surface-800">{f.value}</p>
               </div>
             </div>
           ))}
         </div>
 
         {driver.notes && (
-          <div className="p-3 rounded-xl bg-surface-800/40">
+          <div className="p-3 rounded-xl bg-surface-50">
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-surface-500" />
               <p className="text-xs text-surface-500">Notes</p>
             </div>
-            <p className="text-sm text-surface-300">{driver.notes}</p>
+            <p className="text-sm text-surface-700">{driver.notes}</p>
           </div>
         )}
       </div>

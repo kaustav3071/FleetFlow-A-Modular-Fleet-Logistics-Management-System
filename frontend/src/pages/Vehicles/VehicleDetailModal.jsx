@@ -23,15 +23,15 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-xl bg-surface-700/50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <div className="w-16 h-16 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
             {vehicle.image ? (
               <img src={vehicle.image} alt="" className="w-16 h-16 object-cover rounded-xl" />
             ) : (
-              <Truck className="w-8 h-8 text-brand-400" />
+              <Truck className="w-8 h-8 text-brand-600" />
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{vehicle.name}</h3>
+            <h3 className="text-lg font-semibold text-surface-900">{vehicle.name}</h3>
             <p className="text-sm text-surface-400">{vehicle.licensePlate} {vehicle.model ? `• ${vehicle.model}` : ''}</p>
             <Badge color={status.color || 'gray'} dot className="mt-2">{status.label || vehicle.status}</Badge>
           </div>
@@ -40,23 +40,23 @@ export default function VehicleDetailModal({ isOpen, onClose, vehicle }) {
         {/* Fields */}
         <div className="grid grid-cols-2 gap-4">
           {fields.map((f) => (
-            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-800/40">
+            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-50">
               <f.icon className="w-4 h-4 text-surface-500 mt-0.5" />
               <div>
                 <p className="text-xs text-surface-500">{f.label}</p>
-                <p className="text-sm font-medium text-surface-200 capitalize">{f.value}</p>
+                <p className="text-sm font-medium text-surface-800 capitalize">{f.value}</p>
               </div>
             </div>
           ))}
         </div>
 
         {vehicle.notes && (
-          <div className="p-3 rounded-xl bg-surface-800/40">
+          <div className="p-3 rounded-xl bg-surface-50">
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-surface-500" />
               <p className="text-xs text-surface-500">Notes</p>
             </div>
-            <p className="text-sm text-surface-300">{vehicle.notes}</p>
+            <p className="text-sm text-surface-700">{vehicle.notes}</p>
           </div>
         )}
       </div>

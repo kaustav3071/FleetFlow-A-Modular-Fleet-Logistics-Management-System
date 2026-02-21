@@ -1,12 +1,13 @@
 const colorMap = {
-  green: 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30',
-  red: 'bg-red-500/15 text-red-400 ring-1 ring-red-500/30',
-  yellow: 'bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30',
-  blue: 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30',
-  purple: 'bg-purple-500/15 text-purple-400 ring-1 ring-purple-500/30',
-  orange: 'bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/30',
-  gray: 'bg-surface-500/15 text-surface-400 ring-1 ring-surface-500/30',
-  cyan: 'bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30',
+  green: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
+  red: 'bg-red-50 text-red-700 ring-1 ring-red-200',
+  yellow: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
+  blue: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  purple: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
+  orange: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+  gray: 'bg-surface-100 text-surface-600 ring-1 ring-surface-200',
+  cyan: 'bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200',
+  teal: 'bg-brand-50 text-brand-700 ring-1 ring-brand-200',
 };
 
 const sizes = {

@@ -8,9 +8,10 @@ import AreaChartComponent from '../../components/charts/AreaChart.jsx';
 import BarChartComponent from '../../components/charts/BarChart.jsx';
 import DonutChart from '../../components/charts/DonutChart.jsx';
 import { formatCurrency } from '../../utils/formatters.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function AnalyticsPage() {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [costBreakdown, setCostBreakdown] = useState([]);
   const [tripsPerVehicle, setTripsPerVehicle] = useState([]);
@@ -98,7 +99,7 @@ export default function AnalyticsPage() {
               data={monthlyChartData}
               dataKey="amount"
               title="Monthly Expense Trend"
-              color="#F59E0B"
+              color="#14B8A6"
               height={320}
             />
           ) : (

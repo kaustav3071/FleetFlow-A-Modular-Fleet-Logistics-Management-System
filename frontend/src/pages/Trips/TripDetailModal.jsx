@@ -24,7 +24,7 @@ export default function TripDetailModal({ isOpen, onClose, trip }) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">{trip.origin} → {trip.destination}</h3>
+            <h3 className="text-lg font-semibold text-surface-900">{trip.origin} → {trip.destination}</h3>
             <p className="text-sm text-surface-400 mt-1">Created {formatDate(trip.createdAt)}</p>
           </div>
           <Badge color={status.color || 'gray'} dot size="md">{status.label || trip.status}</Badge>
@@ -39,8 +39,8 @@ export default function TripDetailModal({ isOpen, onClose, trip }) {
             const isActive = stages.indexOf(s) <= currentIdx && !isCancelled;
             return (
               <div key={s} className="flex items-center gap-2 flex-1">
-                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${isActive ? 'bg-brand-400' : 'bg-surface-600'} ${isCancelled && s === 'draft' ? 'bg-red-400' : ''}`} />
-                <div className={`h-0.5 flex-1 ${i < 2 ? (isActive && stages.indexOf(s) < currentIdx ? 'bg-brand-400' : 'bg-surface-700') : 'hidden'}`} />
+                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${isActive ? 'bg-brand-500' : 'bg-surface-300'} ${isCancelled && s === 'draft' ? 'bg-red-400' : ''}`} />
+                <div className={`h-0.5 flex-1 ${i < 2 ? (isActive && stages.indexOf(s) < currentIdx ? 'bg-brand-500' : 'bg-surface-200') : 'hidden'}`} />
               </div>
             );
           })}
@@ -48,23 +48,23 @@ export default function TripDetailModal({ isOpen, onClose, trip }) {
 
         <div className="grid grid-cols-2 gap-4">
           {fields.map((f) => (
-            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-800/40">
+            <div key={f.label} className="flex items-start gap-3 p-3 rounded-xl bg-surface-50">
               <f.icon className="w-4 h-4 text-surface-500 mt-0.5" />
               <div>
                 <p className="text-xs text-surface-500">{f.label}</p>
-                <p className="text-sm font-medium text-surface-200">{f.value}</p>
+                <p className="text-sm font-medium text-surface-800">{f.value}</p>
               </div>
             </div>
           ))}
         </div>
 
         {trip.notes && (
-          <div className="p-3 rounded-xl bg-surface-800/40">
+          <div className="p-3 rounded-xl bg-surface-50">
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-surface-500" />
               <p className="text-xs text-surface-500">Notes</p>
             </div>
-            <p className="text-sm text-surface-300">{trip.notes}</p>
+            <p className="text-sm text-surface-700">{trip.notes}</p>
           </div>
         )}
       </div>

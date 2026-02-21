@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button.jsx';
 import { maintenanceAPI } from '../../api/maintenance.js';
 import { vehiclesAPI } from '../../api/vehicles.js';
 import { SERVICE_TYPES } from '../../utils/constants.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 const statusOptions = [
   { value: 'in_progress', label: 'In Progress' },
@@ -17,6 +17,7 @@ const statusOptions = [
 export default function MaintenanceFormModal({ isOpen, onClose, record, onSuccess }) {
   const isEdit = !!record;
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
   const [vehicles, setVehicles] = useState([]);
   const [form, setForm] = useState({
     vehicle: record?.vehicle?._id || record?.vehicle || '',
@@ -80,7 +81,7 @@ export default function MaintenanceFormModal({ isOpen, onClose, record, onSucces
         <Textarea name="description" label="Description" value={form.description} onChange={handleChange} placeholder="Describe the maintenance work..." />
         <Textarea name="notes" label="Notes" value={form.notes} onChange={handleChange} placeholder="Additional notes..." />
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-surface-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-surface-200">
           <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>{isEdit ? 'Update' : 'Create'}</Button>
         </div>

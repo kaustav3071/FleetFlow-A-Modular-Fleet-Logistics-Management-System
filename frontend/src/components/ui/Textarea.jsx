@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { motion } from 'framer-motion';
 
 const Textarea = forwardRef(({ label, error, className = '', ...props }, ref) => {
   return (
@@ -6,10 +7,18 @@ const Textarea = forwardRef(({ label, error, className = '', ...props }, ref) =>
       {label && <label className="label">{label}</label>}
       <textarea
         ref={ref}
-        className={`input-base w-full min-h-[100px] resize-y ${error ? 'border-red-500' : ''} ${className}`}
+        className={`input-base w-full min-h-[100px] resize-y ${error ? 'border-red-400 focus:ring-red-500/20' : ''} ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-red-500 font-medium"
+        >
+          {error}
+        </motion.p>
+      )}
     </div>
   );
 });

@@ -16,9 +16,10 @@ import TripDetailModal from './TripDetailModal.jsx';
 import { TRIP_STATUS } from '../../utils/constants.js';
 import { formatDate, formatCurrency } from '../../utils/formatters.js';
 import { useDebounce } from '../../hooks/useDebounce.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function TripsPage() {
+  const toast = useToast();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -89,7 +90,7 @@ export default function TripsPage() {
       key: 'origin', label: 'Route', sortable: true,
       render: (val, row) => (
         <div>
-          <p className="font-medium text-surface-200">{val}</p>
+          <p className="font-medium text-surface-800">{val}</p>
           <p className="text-xs text-surface-500">→ {row.destination}</p>
         </div>
       ),
@@ -125,7 +126,7 @@ export default function TripsPage() {
             <button
               onClick={(e) => { e.stopPropagation(); handleDispatch(row._id); }}
               disabled={actionLoading === row._id}
-              className="p-1.5 rounded-lg text-surface-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50"
+              className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
               title="Dispatch"
             >
               <Send className="w-4 h-4" />
@@ -133,20 +134,20 @@ export default function TripsPage() {
           )}
           {row.status === 'dispatched' && (
             <>
-              <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50" title="Complete">
+              <button onClick={(e) => { e.stopPropagation(); handleComplete(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50" title="Complete">
                 <CheckCircle className="w-4 h-4" />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); handleCancel(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50" title="Cancel">
+              <button onClick={(e) => { e.stopPropagation(); handleCancel(row._id); }} disabled={actionLoading === row._id} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50" title="Cancel">
                 <XCircle className="w-4 h-4" />
               </button>
             </>
           )}
-          <button onClick={(e) => { e.stopPropagation(); setDetailTrip(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setDetailTrip(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"><Eye className="w-4 h-4" /></button>
           {['draft'].includes(row.status) && (
-            <button onClick={(e) => { e.stopPropagation(); setEditTrip(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-500 hover:text-brand-400 hover:bg-brand-500/10 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
+            <button onClick={(e) => { e.stopPropagation(); setEditTrip(row); setShowForm(true); }} className="p-1.5 rounded-lg text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-colors cursor-pointer"><Edit className="w-4 h-4" /></button>
           )}
           {['draft', 'cancelled'].includes(row.status) && (
-            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="p-1.5 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
           )}
         </div>
       ),

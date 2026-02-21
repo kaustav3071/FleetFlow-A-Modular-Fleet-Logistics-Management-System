@@ -7,11 +7,12 @@ import Button from '../../components/ui/Button.jsx';
 import { tripsAPI } from '../../api/trips.js';
 import { vehiclesAPI } from '../../api/vehicles.js';
 import { driversAPI } from '../../api/drivers.js';
-import toast from 'react-hot-toast';
+import { useToast } from '../../components/ui/Toast.jsx';
 
 export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
   const isEdit = !!trip;
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [form, setForm] = useState({
@@ -85,7 +86,7 @@ export default function TripFormModal({ isOpen, onClose, trip, onSuccess }) {
         </div>
         <Textarea name="notes" label="Notes" value={form.notes} onChange={handleChange} placeholder="Additional trip notes..." />
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-surface-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-surface-200">
           <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>{isEdit ? 'Update' : 'Create'} Trip</Button>
         </div>
