@@ -79,17 +79,17 @@ export default function ProfileDropdown() {
                         {/* Menu Items */}
                         <div className="py-1.5">
                             <button
-                                onClick={() => { setOpen(false); }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-surface-700 hover:bg-surface-50 transition-colors cursor-pointer"
+                                onClick={() => { setOpen(false); navigate('/profile'); }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-surface-700 hover:bg-surface-50 transition-all duration-200 cursor-pointer group"
                             >
-                                <User className="w-4 h-4 text-surface-400" />
+                                <User className="w-4 h-4 text-surface-400 transition-colors group-hover:text-brand-500" />
                                 Edit Profile
                             </button>
                             <button
-                                onClick={() => { setOpen(false); }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-surface-700 hover:bg-surface-50 transition-colors cursor-pointer"
+                                onClick={() => { setOpen(false); navigate('/profile'); }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-surface-700 hover:bg-surface-50 transition-all duration-200 cursor-pointer group"
                             >
-                                <Settings className="w-4 h-4 text-surface-400" />
+                                <Settings className="w-4 h-4 text-surface-400 transition-all duration-200 group-hover:text-brand-500 group-hover:rotate-90" />
                                 Account Settings
                             </button>
                         </div>

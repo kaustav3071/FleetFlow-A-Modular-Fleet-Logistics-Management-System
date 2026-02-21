@@ -14,6 +14,7 @@ import TripsPage from './pages/Trips/TripsPage.jsx';
 import MaintenancePage from './pages/Maintenance/MaintenancePage.jsx';
 import ExpensesPage from './pages/Expenses/ExpensesPage.jsx';
 import AnalyticsPage from './pages/Analytics/AnalyticsPage.jsx';
+import ProfilePage from './pages/Profile/ProfilePage.jsx';
 
 function AuthGuard({ children }) {
   const { user, loading } = useAuth();
@@ -40,6 +41,9 @@ export default function App() {
             }>
               {/* Dashboard — all roles */}
               <Route index element={<DashboardPage />} />
+
+              {/* Profile & Settings — all roles */}
+              <Route path="/profile" element={<ProfilePage />} />
 
               {/* Vehicles — Manager (full), Dispatcher (view), Safety Officer (view) */}
               <Route path="/vehicles" element={

@@ -339,3 +339,73 @@ export const getMe = asyncHandler(async (req, res) => {
         new ApiResponse(200, { user }, "User profile fetched successfully.")
     );
 });
+
+// ─────────────────────────────────────────────────────────
+// PUT /api/v1/auth/profile
+// ─────────────────────────────────────────────────────────
+export const updateProfile = asyncHandler(async (req, res) => {
+    const { name, email, phone } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        throw new ApiError(404, "User not found.");
+    }
+
+    // If email is changing, check for duplicates
+    if (email && email !== user.email) {
+        const exists = await User.findOne({ email });
+        if (exists) {
+            throw new ApiError(409, "An account with this email already exists.");
+        }
+        user.email = email;
+    }
+
+    if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+
+    await user.save();
+
+    res.status(200).json(
+        new ApiResponse(200, { user }, "Profile updated successfully.")
+    );
+});
+
+// ─────────────────────────────────────────────────────────
+// PUT /api/v1/auth/change-password
+// ─────────────────────────────────────────────────────────
+export const changePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        throw new ApiError(400, "Current password and new password are required.");
+    }
+
+    if (newPassword.length < 8) {
+        throw new ApiError(400, "New password must be at least 8 characters long.");
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+        throw new ApiError(404, "User not found.");
+    }
+
+    // Google OAuth users without password
+    if (!user.password && user.googleId) {
+        throw new ApiError(400, "This account uses Google sign-in. Password cannot be changed here.");
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+        throw new ApiError(401, "Current password is incorrect.");
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    // Blacklist existing tokens for security
+    await blacklistToken(user._id);
+
+    res.status(200).json(
+        new ApiResponse(200, null, "Password changed successfully. Please login again.")
+    );
+});

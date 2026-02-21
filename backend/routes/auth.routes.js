@@ -3,7 +3,7 @@ import { protect } from "../middlewares/auth.middleware.js";
 import validate from "../middlewares/validate.middleware.js";
 import { uploadAvatar } from "../middlewares/upload.middleware.js";
 import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from "../validators/auth.validator.js";
-import { register, verifyEmail, login, googleCallback, refreshToken, logout, forgotPassword, resetPassword, getMe } from "../controllers/auth.controller.js";
+import { register, verifyEmail, login, googleCallback, refreshToken, logout, forgotPassword, resetPassword, getMe, updateProfile, changePassword } from "../controllers/auth.controller.js";
 import passport from "../config/passport.js";
 
 const router = Router();
@@ -18,6 +18,8 @@ router.post("/refresh-token", refreshToken);
 
 // ─── Protected Routes ────────────────────────────────────
 router.get("/me", protect, getMe);
+router.put("/profile", protect, updateProfile);
+router.put("/change-password", protect, changePassword);
 router.post("/logout", protect, logout);
 
 // ─── Google OAuth ────────────────────────────────────────
